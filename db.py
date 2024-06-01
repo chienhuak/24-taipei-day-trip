@@ -81,7 +81,7 @@ def json_insert() :
             attraction["CAT"],
             attraction["MEMO_TIME"],
             attraction["POI"],
-            attraction["file"],
+            attraction["file"].replace("https:",",https:")[1:],
             attraction["idpt"],
             attraction["latitude"],
             attraction["description"],
@@ -116,9 +116,9 @@ def url_files() :
     print("JSON data inserted successfully!")
 
 
-#create_table()
-#json_insert()
-url_files()
+create_table()
+json_insert()
+#url_files()
 
 # 關閉連接
 cursor.close()
