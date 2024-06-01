@@ -36,18 +36,18 @@ async def thankyou(request: Request):
 @app.get("/api/attractions", response_class=JSONResponse)
 async def attractions(request: Request, page:Optional[int]=0,keyword:Optional[str]=""):
 	if page < 0:
-		return {
+		return JSONResponse(status_code=500, content={
 			"error": True,
-			"message": "請按照情境提供對應的錯誤訊息"
-			}
+			"message": "頁數錯誤"
+			}) 
 
 	with mydb.cursor(buffered=True,dictionary=True) as mycursor :
 
-		# 每頁顯示10條留言
+		# 每頁顯示12條留言
 		page_size = 12
 
 		query = """
-		SELECT id, name, CAT as category, description, address, direction as transport, mrt, latitude as lat, longitude as lng, file as images, SERIAL_NO
+		SELECT id, name, CAT as category, description, address, direction as transport, mrt, latitude as lat, longitude as lng, file as images
 		FROM attractions 
 		WHERE (mrt = %s OR name like %s) 
 		ORDER BY id
@@ -60,12 +60,40 @@ async def attractions(request: Request, page:Optional[int]=0,keyword:Optional[st
 				query = """
 				SELECT url
 				FROM urls 
-				WHERE SERIAL_NO = %s AND (url like '%.jpg' OR url like '%.png')
+				WHERE id = %s AND (url like '%.jpg' OR url like '%.png')
 				"""
-				mycursor2.execute(query, (result['SERIAL_NO'],))
-				results2 = mycursor.fetchall()
-				result['image'] = results2
+				mycursor2.execute(query, (result['id'],))
+				results2 = mycursor2.fetchall()
+				url_list = [x[0] for x in results2]
+				result['images'] = url_list
 
 	return {
 		"nextPage": page,
 		"data": results}
+
+@app.get("/api/attraction/{attractionId}", response_class=JSONResponse)
+async def attractions(request: Request, attractionId:int):
+	try:
+		with mydb.cursor(buffered=True,dictionary=True) as mycursor :
+			
+			query = """
+			SELECT id, name, CAT as category, description, address, direction as transport, mrt, latitude as lat, longitude as lng, file as images
+			FROM attractions 
+			WHERE id = %s
+			ORDER BY id
+			"""
+			mycursor.execute(query, (attractionId,))
+			results = mycursor.fetchall()
+
+		if results :
+			return {"data": results}
+		else :
+			return JSONResponse(status_code=400, content={
+				"error": True,
+				"message": "景點編號不存在"
+				}) 
+	except Exception as e:
+		return JSONResponse(status_code=500, content={
+				"error": True,
+				"message": "系統錯誤"
+				}) 

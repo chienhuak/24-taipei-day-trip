@@ -24,7 +24,7 @@ def create_table() :
     # 創建資料表（如果尚未創建）
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS attractions (
-        id INT AUTO_INCREMENT PRIMARY KEY,
+        id INT PRIMARY KEY,
         rate INT,
         direction TEXT,
         name VARCHAR(255),
@@ -50,8 +50,7 @@ def create_table() :
 
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS urls (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        SERIAL_NO VARCHAR(50),
+        id INT,
         url VARCHAR(255)
     )
     """)
@@ -63,10 +62,11 @@ def json_insert() :
     # 插入 JSON 數據到資料表中
     for attraction in json_data["result"]["results"]:
         sql = """
-        INSERT INTO attractions (rate, direction, name, date, longitude, REF_WP, avBegin, langinfo, MRT, SERIAL_NO, RowNumber, CAT, MEMO_TIME, POI, file, idpt, latitude, description, avEnd, address)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        INSERT INTO attractions (id, rate, direction, name, date, longitude, REF_WP, avBegin, langinfo, MRT, SERIAL_NO, RowNumber, CAT, MEMO_TIME, POI, file, idpt, latitude, description, avEnd, address)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """
         cursor.execute(sql, (
+            attraction["_id"],
             attraction["rate"],
             attraction["direction"],
             attraction["name"],
@@ -102,11 +102,11 @@ def url_files() :
         for x in xs :
             if x:
                 sql = """
-                INSERT INTO urls (SERIAL_NO, url)
+                INSERT INTO urls (id, url)
                 VALUES (%s, %s)
                 """
                 cursor.execute(sql, (
-                    data["SERIAL_NO"],
+                    data["_id"],
                     'https:'+x
                 ))
     
@@ -118,7 +118,7 @@ def url_files() :
 
 create_table()
 json_insert()
-#url_files()
+url_files()
 
 # 關閉連接
 cursor.close()
