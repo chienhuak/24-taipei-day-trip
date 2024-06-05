@@ -3,7 +3,8 @@ import json
 import os
 
 # 讀取 JSON 檔案
-file_path = r'C:\Users\User\Documents\GitHub\24-taipei-day-trip\data\taipei-attractions.json'
+#file_path = r'C:\Users\User\Documents\GitHub\24-taipei-day-trip\data\taipei-attractions.json'
+file_path = r'./data/taipei-attractions.json'
 with open(file_path, 'r', encoding='utf-8') as f:
     json_data = json.load(f)
 
