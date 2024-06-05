@@ -16,6 +16,7 @@ conn = mysql.connector.connect(
     user="root",
     password=mysql_password,
     database="website"
+    ssl_disabled=True  # 禁用 SSL
     )
 
 cursor = conn.cursor()
