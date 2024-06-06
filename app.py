@@ -68,7 +68,7 @@ async def attractions(request: Request, page:Optional[int]=0,keyword:Optional[st
 				result['images'] = url_list
 
 	return {
-		"nextPage": page,
+		"nextPage": page+1 if len(results) == 12 else None,
 		"data": results}
 
 @app.get("/api/attraction/{attractionId}", response_class=JSONResponse)
@@ -92,6 +92,32 @@ async def attractions(request: Request, attractionId:int):
 				"error": True,
 				"message": "景點編號不存在"
 				}) 
+	except Exception as e:
+		return JSONResponse(status_code=500, content={
+				"error": True,
+				"message": "系統錯誤"
+				}) 
+
+@app.get("/api/mrts", response_class=JSONResponse)
+async def mrts(request: Request):
+	try:
+		with mydb.cursor(buffered=True,dictionary=True) as mycursor :
+			
+			query = """
+			SELECT mrt
+			FROM attractions 
+			GROUP BY mrt
+			ORDER BY count(mrt) desc
+			"""
+			mycursor.execute(query)
+			results = mycursor.fetchall()
+
+			# 將結果轉換為只包含 mrt value 的 list
+			mrt_list = [item['mrt'] for item in results]
+
+		if results :
+			return {"data": mrt_list}
+
 	except Exception as e:
 		return JSONResponse(status_code=500, content={
 				"error": True,
