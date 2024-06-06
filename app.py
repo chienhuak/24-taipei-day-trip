@@ -10,14 +10,15 @@ app=FastAPI(debug=True)
 # 從環境變數中讀取 MySQL 密碼
 mysql_password = os.environ.get("MYSQL_PASSWORD")
 # 連接到 MySQL 資料庫
-mydb = mysql.connector.connect(
+with mysql.connector.connect(
     host="localhost",
     user="root",
     password=mysql_password,
-    database="website"
-    )
+    database="website",
+	pool_name="hello"
+    ):pass
 
-cursor = mydb.cursor()
+
 
 # Static Pages (Never Modify Code in this Block)
 @app.get("/", include_in_schema=False)
@@ -41,7 +42,7 @@ async def attractions(request: Request, page:Optional[int]=0,keyword:Optional[st
 			"message": "頁數錯誤"
 			}) 
 
-	with mydb.cursor(buffered=True,dictionary=True) as mycursor :
+	with mysql.connector.connect(pool_name="hello") as mydb, mydb.cursor(buffered=True,dictionary=True) as mycursor :
 
 		# 每頁顯示12條留言
 		page_size = 12
@@ -74,7 +75,7 @@ async def attractions(request: Request, page:Optional[int]=0,keyword:Optional[st
 @app.get("/api/attraction/{attractionId}", response_class=JSONResponse)
 async def attractions(request: Request, attractionId:int):
 	try:
-		with mydb.cursor(buffered=True,dictionary=True) as mycursor :
+		with mysql.connector.connect(pool_name="hello") as mydb, mydb.cursor(buffered=True,dictionary=True) as mycursor :
 			
 			query = """
 			SELECT id, name, CAT as category, description, address, direction as transport, mrt, latitude as lat, longitude as lng, file as images
@@ -101,7 +102,7 @@ async def attractions(request: Request, attractionId:int):
 @app.get("/api/mrts", response_class=JSONResponse)
 async def mrts(request: Request):
 	try:
-		with mydb.cursor(buffered=True,dictionary=True) as mycursor :
+		with mysql.connector.connect(pool_name="hello") as mydb, mydb.cursor(buffered=True,dictionary=True) as mycursor :
 			
 			query = """
 			SELECT mrt
