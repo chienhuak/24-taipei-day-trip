@@ -57,8 +57,12 @@ function photos(page) {
                 div.appendChild(p2)
                 container2.appendChild(div)
             }
+            loading = false; // 重置loading狀態
         })
-        .catch(error => console.error('Error:', error));
+        .catch(error => {
+            console.error('Error:', error)
+            loading = false; // 請求失敗，重置loading狀態
+        });
 }
 
 
@@ -71,13 +75,16 @@ document.addEventListener('DOMContentLoaded', function(){
 // 監聽滾動事件
 let currentPage = 0; // 初始化頁數
 let loading = false; // 請求狀態
+let debounceTimer; // 防彈跳計時器，防止事件過度觸發
 
 window.addEventListener('scroll', () => {
-    if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 50 && !loading) {
+    if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 500 && !loading) {
         // 滾動到接近底部500px且沒有正在進行的請求時加載更多照片
         loading = true;
         currentPage++;
-        photos(currentPage);
-        loading = false; // 重置loading狀態
+        clearTimeout(debounceTimer); // 清除之前的計時器
+        debounceTimer = setTimeout(() => {
+            photos(currentPage);
+        }, 500); // 在500毫秒後執行加載操作
     }
 });
