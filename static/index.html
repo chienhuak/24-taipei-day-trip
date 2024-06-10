@@ -4,8 +4,41 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Index</title>
+  <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-  
+  <header>
+    <nav>
+      <a class="home-link" href="/">台北一日遊</a>
+      <div>
+        <a href="">預定行程</a>
+        <a href="">登入/註冊</a>
+      </div>
+    </nav>
+    
+    
+    <div class = "container">
+      <img class="home" src="/static/images/taipei101.png" alt="taipei101.png"> 
+      <form class="searchbar" action="search">
+        <input type="text" placeholder="輸入景點名稱查詢"> <button class="search_btn" type="submit"><img src="/static/images/search_icon.png" alt=""></button>
+      </form>  
+    </div>
+
+    <div class="slide-bar">
+      <div class="flex-shrink-0">
+        <a href="#" class="arrow-left"><img src="/static/images/Hovered_l.png" alt=""></a>
+      </div>
+      <div id="container1"></div>
+      <div class="flex-shrink-0">
+        <a href="#" class="arrow-right"><img src="/static/images/Hovered_r.png" alt=""></a>
+      </div>
+    </div>
+
+
+    <div id = "container2"></div>
+    
+  </header>
+  <!-- <script src="{{url_for('static',path='/attractions.js')}}"></script>  -->
+  <script src="/static/attractions.js"></script>
 </body>
 </html>

@@ -5,6 +5,8 @@ from typing import Optional
 import mysql.connector
 import json
 import os
+from fastapi.staticfiles import StaticFiles
+
 app=FastAPI(debug=True)
 
 # 從環境變數中讀取 MySQL 密碼
@@ -18,7 +20,8 @@ with mysql.connector.connect(
 	pool_name="hello"
     ):pass
 
-
+# 設定靜態檔案路徑
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # Static Pages (Never Modify Code in this Block)
 @app.get("/", include_in_schema=False)

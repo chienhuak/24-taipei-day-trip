@@ -1,0 +1,113 @@
+.home-link {
+    color: #448899;
+    font-style: normal;
+    font-size: 2em;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* Container needed to position the button. Adjust the width as needed */
+.container {
+    position: relative;
+    width: 100vw;
+  }
+
+/* Make the image responsive */
+.container .home {
+    width: 100%;
+    height: auto;
+  }
+
+.search_btn {
+    background-color: #448899;
+}
+
+/* Style the button and place it in the middle of the container/image */
+.container .searchbar {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    background-color: #555;
+    color: white;
+    font-size: 16px;
+    padding: 12px 24px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+
+a {
+    padding: 3px;
+}
+
+body {
+    display:flex;
+    align-content: center;
+    border: solid green 2px;
+    margin:0;
+}
+
+
+#container2 {
+    display:flex;
+    max-width: 1200px;
+    width: 100vw;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    border: solid pink 2px;
+    margin: auto;
+}
+
+.imgbox {
+    height: 242px;
+    width: 270px;
+    position: relative;
+    border: solid gray 1px;
+    margin-bottom: 35px;
+}
+
+.myphoto {
+    height: 197px;
+    width: 270px;
+    object-fit: cover;
+}
+
+.p1 {
+    position: absolute;
+    width:100%;
+    top: 165.4px; /* 距離圖片下緣的距離 */
+    color: rgb(255, 255, 255);
+    text-align: center;
+    background-color: rgba(0,0,0,0.6); /* 背景顏色及透明度 */
+    padding: 5px 0px; /* 文字框內的間距 */
+    margin: 0;
+}
+
+.p2 {
+    align-items:center;
+}
+
+
+.slide-bar {
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    white-space: nowrap;
+    position: relative;
+}
+
+#container1 {
+    display: flex;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+    flex-grow: 1;
+    width: 80vw;
+}
