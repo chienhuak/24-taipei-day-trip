@@ -31,8 +31,8 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 
-function photos() {
-    const apiUrl = '/api/attractions'
+function photos(page) {
+    const apiUrl = `/api/attractions?page=${page}`  //使用模板字面量（template literals）構建URL時，需使用反引號（`）而不是單引號（'）。這樣可以確保變量 ${page} 被正確替換。
     const container2 = document.querySelector('#container2')
 
     fetch(apiUrl)
@@ -64,5 +64,20 @@ function photos() {
 
 document.addEventListener('DOMContentLoaded', function(){
     mrts()
-    photos()
+    photos(0)
 })
+
+
+// 監聽滾動事件
+let currentPage = 0; // 初始化頁數
+let loading = false; // 請求狀態
+
+window.addEventListener('scroll', () => {
+    if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 50 && !loading) {
+        // 滾動到接近底部500px且沒有正在進行的請求時加載更多照片
+        loading = true;
+        currentPage++;
+        photos(currentPage);
+        loading = false; // 重置loading狀態
+    }
+});
