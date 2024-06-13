@@ -46,6 +46,7 @@ nav {
 
 a {
     padding: 3px;
+    text-decoration: none;
 }
 
 body {
@@ -61,7 +62,7 @@ body {
     max-width: 1200px;
     width: 100vw;
     flex-wrap: wrap;
-    justify-content: space-between;
+    /* justify-content: space-between; */
     border: solid pink 2px;
     margin: auto;
 }
@@ -70,8 +71,8 @@ body {
     height: 242px;
     width: 270px;
     position: relative;
-    border: solid gray 1px;
-    margin-bottom: 35px;
+    border: solid gray 3px;
+    margin: 10px;
 }
 
 .myphoto {
@@ -83,18 +84,25 @@ body {
 .p1 {
     position: absolute;
     width:100%;
-    top: 165.4px; /* 距離圖片下緣的距離 */
+    top: 158px; /* 距離圖片下緣的距離 */
     color: rgb(255, 255, 255);
-    text-align: center;
+    text-align: left;
     background-color: rgba(0,0,0,0.6); /* 背景顏色及透明度 */
-    padding: 5px 0px; /* 文字框內的間距 */
+    padding: 9px 5%; /* 文字框內的間距 */
     margin: 0;
+    box-sizing: border-box;
+    overflow:hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
-.p2 {
-    align-items:center;
+.textbox {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    /* border: solid orange 3px; */
+    padding: 9px 5%;
 }
-
 
 .slide-bar {
     display: flex;
@@ -102,6 +110,9 @@ body {
     overflow: hidden;
     white-space: nowrap;
     position: relative;
+    border: solid pink 2px;
+    width: 1200px;
+    margin: auto;
 }
 
 #container1 {
@@ -110,4 +121,12 @@ body {
     scroll-behavior: smooth;
     flex-grow: 1;
     width: 80vw;
+}
+
+.mrt {
+    border: none;
+    background-color: transparent;
+    padding: 5px;
+    cursor: grab;
+    margin: 10px;
 }
