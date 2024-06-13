@@ -1,3 +1,12 @@
+body {
+    /* display:flex; */
+    align-content: center;
+    /* border: dashed goldenrod 5px; */
+    margin:0;
+    /* width: 100%; */
+    box-sizing: border-box;
+}
+
 .home-link {
     color: #448899;
     font-style: normal;
@@ -10,38 +19,72 @@ nav {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    width: 100%;
+    /* width: calc(100vw - scrollbarWidth); */
+    /* border : dotted 3px orange; */
+    box-sizing: border-box;
+    position: fixed;
+    z-index: 999;
+    background-color: white;
 }
 
 /* Container needed to position the button. Adjust the width as needed */
 .container {
     position: relative;
-    width: 100vw;
+    width: calc(100vw - scrollbarWidth);
   }
 
 /* Make the image responsive */
 .container .home {
     width: 100%;
-    height: auto;
+    /* height: auto; */
   }
 
 .search_btn {
     background-color: #448899;
+    padding: 6px;
+    margin:0;
+    border:solid #1c414a 1px;
+    border-radius: 0 5px 5px 0;
+}
+
+.search_img {
+    display: inline-block;
+    width:20px;
+    /* font: normal normal normal 14px / 1 fontawesome;
+    font-size: inherit;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale; */
+    transform: translate(0, 0);
+}
+
+#search-input {
+    margin: 0;
+    padding: 10px;
+    float:left;
+    border:solid #1c414a 1px;
+    border-radius: 5px 0 0 5px;
 }
 
 /* Style the button and place it in the middle of the container/image */
 .container .searchbar {
     position: absolute;
+    width: 1200px;
     top: 50%;
+    /* margin:auto; */
     left: 50%;
     transform: translate(-50%, -50%);
     -ms-transform: translate(-50%, -50%);
-    background-color: #555;
+    background-color: transparent;
     color: white;
     font-size: 16px;
-    padding: 12px 24px;
+    /* padding: 0px; */
     border: none;
     cursor: pointer;
     border-radius: 5px;
+    z-index: 998;
+    
   }
 
 a {
@@ -49,22 +92,15 @@ a {
     text-decoration: none;
 }
 
-body {
-    display:flex;
-    align-content: center;
-    border: solid green 2px;
-    margin:0;
-}
-
-
 #container2 {
     display:flex;
     max-width: 1200px;
     width: 100vw;
     flex-wrap: wrap;
-    /* justify-content: space-between; */
-    border: solid pink 2px;
+    justify-content: left;
+    /* border: solid pink 2px; */
     margin: auto;
+    box-sizing: border-box;
 }
 
 .imgbox {
@@ -72,7 +108,7 @@ body {
     width: 270px;
     position: relative;
     border: solid gray 3px;
-    margin: 10px;
+    margin: 10px auto ;
 }
 
 .myphoto {
@@ -110,7 +146,7 @@ body {
     overflow: hidden;
     white-space: nowrap;
     position: relative;
-    border: solid pink 2px;
+    /* border: solid pink 2px; */
     width: 1200px;
     margin: auto;
 }
@@ -124,9 +160,25 @@ body {
 }
 
 .mrt {
+    font-size: medium;
     border: none;
     background-color: transparent;
-    padding: 5px;
+    padding: 6px;
     cursor: grab;
     margin: 10px;
+}
+
+.arrow-img {
+    align-items: center;
+    width: 23px;
+    margin: 0;
+}
+
+@media (max-width: 1200px){
+    
+}
+
+
+@media (max-width: 600px) {
+
 }
