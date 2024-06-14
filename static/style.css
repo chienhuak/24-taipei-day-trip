@@ -147,7 +147,7 @@ a {
     white-space: nowrap;
     position: relative;
     /* border: solid pink 2px; */
-    width: 1200px;
+    width: 80%;
     margin: auto;
 }
 
@@ -176,26 +176,41 @@ a {
 
 @media (max-width: 1200px){
 
-.container .home {
-    height: 360px;
-    }
-    
+    .container .home {
+        height: 360px;
+        }
+
+    .container .searchbar {
+        width: 80%;
+        }
+
+    #container2 {
+        width: 80%;
+    }        
+
 }
 
 
 @media (max-width: 600px) {
 
-.container .home {
-    height: 360px;
+    .container .home {
+        height: 360px;
+        }
+
+    .slide-bar {
+        width: 360px;
+        }
+
+    .container .searchbar {
+        width: 320px;
+        }
+
+    .imgbox {
+        width: 320px;
     }
 
-.slide-bar {
-    width: 360px;
-}
-
-.container .searchbar {
-    width: 360px;
-  }
-
+    .myphoto {
+        width: 100%;
+    }
 
 }
