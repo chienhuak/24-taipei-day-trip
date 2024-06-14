@@ -175,10 +175,27 @@ a {
 }
 
 @media (max-width: 1200px){
+
+.container .home {
+    height: 360px;
+    }
     
 }
 
 
 @media (max-width: 600px) {
+
+.container .home {
+    height: 360px;
+    }
+
+.slide-bar {
+    width: 360px;
+}
+
+.container .searchbar {
+    width: 360px;
+  }
+
 
 }
