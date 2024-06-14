@@ -1,0 +1,66 @@
+.c-h {
+    display: flex;
+    /* margin: auto; */
+}
+.c-v {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* 可以根据需求调整 */
+    border : solid cyan 4px;
+    
+}
+/* .c-v h1,
+.c-v h3,
+.c-v form {
+    margin: 10px 0; 添加一些間距讓元素之間有些距離
+} */
+form {
+    display: flex;
+    flex-direction: column;
+    background-color: rgb(237, 237, 237);
+    padding: 15px;
+    border-radius: 15px;
+}
+.form-group {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin: 5px 0;
+    
+}
+.form-group label {
+    margin-right: 10px;
+    border : dotted pink 5px
+}
+
+/* label {
+    float:left;
+} */
+
+.att-imgbox {
+    width: 540px;
+    height: 400px;
+    /* float: left; */
+    border: dashed orange 5px;
+}
+
+.main {
+    width: 1200px;
+    height: 400px;
+    margin: auto;
+    border: solid yellow 4px;
+}
+
+.padding {
+    padding: 15px;
+}
+
+.att-btn {
+    padding: 10px;
+    width: 140px;
+}
+
+#att-name {
+    border: solid green 4px;
+    margin: 4px;
+}
