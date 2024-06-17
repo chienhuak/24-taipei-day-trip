@@ -83,20 +83,31 @@ async def attractions(request: Request, attractionId:int):
 			query = """
 			SELECT id, name, CAT as category, description, address, direction as transport, mrt, latitude as lat, longitude as lng, file as images
 			FROM attractions 
-			WHERE id = %s
+			WHERE id = %s 
 			ORDER BY id
 			"""
 			mycursor.execute(query, (attractionId,))
 			results = mycursor.fetchall()
 
-		if results :
-			return {"data": results}
-		else :
-			return JSONResponse(status_code=400, content={
-				"error": True,
-				"message": "景點編號不存在"
-				}) 
+			if results :
+				with mydb.cursor(buffered=True) as mycursor2 :
+					query = """
+					SELECT url
+					FROM urls 
+					WHERE id = %s AND (url like '%.jpg' OR url like '%.png')
+					"""
+					mycursor2.execute(query, (attractionId,))
+					results2 = mycursor2.fetchall()
+					url_list = [x[0] for x in results2]
+					results[0]['images'] = url_list
+				return {"data": results}
+			else :
+				return JSONResponse(status_code=400, content={
+					"error": True,
+					"message": "景點編號不存在"
+					}) 
 	except Exception as e:
+		print(e)
 		return JSONResponse(status_code=500, content={
 				"error": True,
 				"message": "系統錯誤"
