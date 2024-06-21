@@ -70,11 +70,18 @@ function photos(page, keyword = "") {
             for (let i=0;i<data.data.length;i++){
                 const div = document.createElement('div')
                 div.className = "imgbox"
+
+                // 加連結到分頁
+                div.addEventListener('click', function() {
+                    window.location.href = `/attraction/${data.data[i].id}`
+                });
+
                 const textdiv = document.createElement('div')
                 textdiv.className = "textbox"
                 const p1 = document.createElement('p')
                 p1.className = "p1"
                 p1.innerText = data.data[i].name  
+                // p1.href = `/attraction/${data.data[i].id}`  // 加連結到分頁，但是 p tag 換成 a tag 會跑版
                 const s2 = document.createElement('span')
                 s2.className = "s2"
                 s2.innerText = data.data[i].mrt  
