@@ -8,11 +8,20 @@
 </head>
 <body>
   <header>
+    <div class="overlay" id="overlay"></div>
     <nav>
       <a class="home-link" href="/">台北一日遊</a>
       <div>
         <a class = "a-style-1" href="">預定行程</a>
-        <a class = "a-style-1" href="">登入/註冊</a>
+        <a id = "signin-card" class = "a-style-1" href="" onclick="card(); return false;">登入/註冊</a>
+      </div>
+      <!-- pop up memu -->
+      <div class = "card">
+        <h1>登入會員帳號</h1>
+        <input type="text"  id = "email" class = "popup-input" placeholder="輸入電子信箱">
+        <input type="text"  id = "password" class = "popup-input" placeholder="輸入密碼">
+        <button class = "popup-btn" onclick="signin()">登入帳戶</button>
+        <h3>還沒有帳戶？點此<span onclick="register()">註冊</span></h3>
       </div>
     </nav>
     <div name="placeholder" style="height:50px;"></div>

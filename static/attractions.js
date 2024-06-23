@@ -124,3 +124,65 @@ window.addEventListener('scroll', () => {
         }, 500); // 在500毫秒後執行加載操作
     }
 });
+
+
+function card() {
+    const card = document.querySelector('.card');
+    const overlay = document.getElementById('overlay');
+    if (card.style.display == "block"){
+        card.style.display = "none";
+        overlay.style.display = 'none';
+        document.removeEventListener('click', handleClickOutside);
+    }
+    else {
+        card.style.display = "block";
+        overlay.style.display = 'block';
+        document.addEventListener('click', handleClickOutside);
+    }
+}
+
+
+function handleClickOutside(event) {
+    const card = document.querySelector('.card');
+    const overlay = document.getElementById('overlay');
+    if (!card.contains(event.target) && !event.target.matches('#signin-card')) {
+      card.style.display = 'none';
+      overlay.style.display = 'none';
+      document.removeEventListener('click', handleClickOutside);
+    }
+}
+
+
+async function signin() {
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+
+    const response = await fetch('/api/user/auth', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ "email":email, "password":password })
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        console.log(result.data);
+        if(result.data)
+            alert('登入成功');
+        else 
+            alert('登入失敗:');
+        // 可以在此處重定向到其他頁面
+        // window.location.href = '/home';
+      } else {
+        const error = await response.json();
+        alert('Something error ' + error);
+      }
+
+}
+
+
+
+// function register() {
+
+// }
