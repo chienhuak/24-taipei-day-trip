@@ -138,3 +138,27 @@ async def mrts(request: Request):
 				"error": True,
 				"message": "系統錯誤"
 				}) 
+
+# 登入會員
+@app.put("/api/user/auth", response_class=JSONResponse)
+async def signin(request: Request, data:dict):
+	print (data)
+	with mysql.connector.connect(pool_name="hello") as mydb, mydb.cursor(buffered=True,dictionary=True) as mycursor :
+		query = """
+			SELECT id, name, username as email
+			FROM member 
+			WHERE username = %s AND password = %s
+			"""
+		mycursor.execute(query, (data["email"], data["password"],))
+		results = mycursor.fetchall()
+		
+
+		if results :
+			return {
+			"data": results[0]}
+		
+		else :
+			return {
+			"data": None}
+
+		
