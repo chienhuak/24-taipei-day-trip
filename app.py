@@ -1,13 +1,16 @@
 from fastapi import *
+from datetime import datetime,timedelta,timezone
 from fastapi.responses import FileResponse
 from fastapi.responses import JSONResponse
-from typing import Optional
+from typing import Optional, Union
 import mysql.connector
 import json
 import os
 from fastapi.staticfiles import StaticFiles
+import jwt
 
 app=FastAPI(debug=True)
+jwtkey = "iweorhfnen834"
 
 # 從環境變數中讀取 MySQL 密碼
 mysql_password = os.environ.get("MYSQL_PASSWORD")
@@ -139,10 +142,26 @@ async def mrts(request: Request):
 				"message": "系統錯誤"
 				}) 
 
+# 登入會員資訊
+@app.get("/api/user/auth", response_class=JSONResponse)
+async def signin(request: Request, myjwt: Union[str, None] = Cookie(None)):
+	print(myjwt)
+	if myjwt:
+		try:
+			myjwtx = jwt.decode(myjwt,jwtkey,algorithms="HS256")
+			print(myjwtx)
+			return myjwtx
+		except jwt.ExpiredSignatureError:
+			print("expired")
+			return JSONResponse(status_code=401, content={
+				"data": None
+				}) 
+
+
 # 登入會員
 @app.put("/api/user/auth", response_class=JSONResponse)
 async def signin(request: Request, data:dict):
-	print (data)
+	#print (data)
 	with mysql.connector.connect(pool_name="hello") as mydb, mydb.cursor(buffered=True,dictionary=True) as mycursor :
 		query = """
 			SELECT id, name, username as email
@@ -154,11 +173,24 @@ async def signin(request: Request, data:dict):
 		
 
 		if results :
-			return {
-			"data": results[0]}
+			exp = datetime.now(tz=timezone.utc) + timedelta(days=7)
+			results[0].update({"exp": exp})
+			access_token = jwt.encode(results[0], jwtkey, algorithm="HS256")
+			resp = JSONResponse(status_code=200, content={
+				"data": access_token
+				})
+			resp.set_cookie(key='myjwt',value=access_token, expires=exp)
+			return resp
 		
 		else :
-			return {
-			"data": None}
+			#return {"data":None}
+
+			resp = JSONResponse(status_code=401, content={
+				"data": None,
+				#"error": True,
+				#"message": "系統錯誤"
+				})
+			resp.delete_cookie("myjwt")
+			return resp 
 
 		

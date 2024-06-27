@@ -41,6 +41,7 @@ function att(id) {
     .then(response => response.json())
     .then(data => {
         // console.log(data)
+        attName.innerText = data.data[0].name
         photos = data.data[0].images
         if (photos.length > 0) {
             photoIndex = 0 //抓第一張圖
@@ -48,12 +49,15 @@ function att(id) {
         }
 
         // 預載圖片
-        // for (let i=0;i<data.data[0].images.length;i++) {
-        //     console.log(data.data[0].images[i])
-        //     photos.src = data.data[0].images[i]
-        //     imgBox.appendChild(photos)
-
-        attName.innerText = data.data[0].name
+        for (let i=0;i<data.data[0].images.length;i++) {
+            //console.log(data.data[0].images[i])
+            let lnk = document.createElement('link');
+            lnk.href = data.data[0].images[i];
+            lnk.rel = 'preload';
+            lnk.as = 'image';
+            lnk.crossorigin="anonymous";
+            document.head.appendChild(lnk);
+        }
     })
 }
 
