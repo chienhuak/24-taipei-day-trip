@@ -150,7 +150,14 @@ async def signin(request: Request, myjwt: Union[str, None] = Cookie(None)):
 		try:
 			myjwtx = jwt.decode(myjwt,jwtkey,algorithms="HS256")
 			print(myjwtx)
-			return myjwtx
+			return {
+				"data" : {
+					"id": myjwtx["id"],
+					"name" : myjwtx["name"] ,
+					"email" : myjwtx["email"]
+				}
+			}
+
 		except jwt.ExpiredSignatureError:
 			print("expired")
 			return JSONResponse(status_code=401, content={
@@ -177,7 +184,7 @@ async def signin(request: Request, data:dict):
 			results[0].update({"exp": exp})
 			access_token = jwt.encode(results[0], jwtkey, algorithm="HS256")
 			resp = JSONResponse(status_code=200, content={
-				"data": access_token
+				"token": access_token
 				})
 			resp.set_cookie(key='myjwt',value=access_token, expires=exp)
 			return resp
@@ -194,3 +201,40 @@ async def signin(request: Request, data:dict):
 			return resp 
 
 		
+
+# 註冊
+@app.post("/api/user", response_class=JSONResponse)
+async def register(request: Request, data:dict):
+	try:
+		with mysql.connector.connect(pool_name="hello") as mydb, mydb.cursor(buffered=True,dictionary=True) as mycursor :
+			query = """
+				SELECT id, name, username as email
+				FROM member 
+				WHERE username = %s
+				"""
+			mycursor.execute(query, (data["email"],))
+			results = mycursor.fetchall()
+			
+
+			if results :
+				return JSONResponse(status_code=400, content={
+					"error": True,
+					"message": "信箱重複註冊"})
+
+			else :
+				query = """
+				INSERT INTO member (name, username, password)
+				VALUES (%s, %s, %s)
+				"""
+				mycursor.execute(query, (data["name"],data["email"],data["password"],))
+				mydb.commit()
+				return {
+					"ok": True
+					}
+
+	except Exception as e:
+		return JSONResponse(status_code=500, content={
+				"error": True,
+				"message": e
+				}) 
+

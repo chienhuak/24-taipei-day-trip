@@ -222,6 +222,22 @@ nav {
     z-index: 1;
 }
 
+#name {
+    display : none;
+}
+
+
+.close-btn {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+}
+
+
+.underlink {
+    text-decoration: underline;
+    color : blueviolet;
+}
 
 @media (max-width: 1200px){
 
