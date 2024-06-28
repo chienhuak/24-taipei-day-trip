@@ -63,3 +63,18 @@ function att(id) {
 
 
 
+
+
+
+function updateFee() {
+    // 獲取Radio按鈕和費用元素
+    const amRadio = document.getElementById('am');
+    const pmRadio = document.getElementById('pm');
+    const feeElement = document.getElementById('fee');
+
+    if (pmRadio.checked) {
+        feeElement.textContent = '新台幣2500元';
+    } else {
+        feeElement.textContent = '新台幣2000元';
+    }
+}
