@@ -62,10 +62,6 @@ function att(id) {
 }
 
 
-
-
-
-
 function updateFee() {
     // 獲取Radio按鈕和費用元素
     const amRadio = document.getElementById('am');

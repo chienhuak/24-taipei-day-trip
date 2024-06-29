@@ -23,7 +23,7 @@ form {
     background-color: rgb(237, 237, 237);
     padding: 15px;
     border-radius: 15px;
-    width: 620px;
+    width: 97%;
 }
 
 
@@ -71,18 +71,16 @@ form {
 
 
 .arrow-left  {
-    width: 100%;
     position: absolute;
     transform: translateY(-50%);
     top: 50%;
-    left: 5px;
+    left: 10px;
     /* transform: translateX(-50%); */
     z-index: 999;
 }
 
 
 .arrow-right  {
-    width: 100%;
     position: absolute;
     transform: translateY(-50%);
     top: 50%;
@@ -96,7 +94,7 @@ form {
     width: 1200px;
     height: 400px;
     margin: 50px auto;
-    border: solid yellow 4px;
+    /* border: solid yellow 4px; */
 }
 
 

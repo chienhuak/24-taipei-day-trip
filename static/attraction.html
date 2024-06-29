@@ -25,7 +25,7 @@
     <div class="c-v att2-style padding">
       <h2 id = "att-name">景點名稱</h2>
       <p id = "mrt-name">公共藝術 at </p>
-      <form action="">
+      <form id="bookingForm" action="POST">
         <label>訂購導覽行程</label>
         <h3>以此景點為中心的一日行程，帶您探索城市角落故事</h3>
         <div class="form-group">
@@ -34,18 +34,19 @@
         </div>
         <div class="form-group">
           <label for="ampm">選擇時間：</label>
-          <input onclick="updateFee()" id ="ampm" name="ampm" type="radio" checked>上半天
-          <input onclick="updateFee()" id = "pm" name="ampm" type="radio">下半天
+          <input onclick="updateFee()" id = "am" name="ampm" type="radio" value="morning" checked>上半天
+          <input onclick="updateFee()" id = "pm" name="ampm" type="radio" value="afternoon">下半天
         </div>
         <div class="form-group">
           <label for="fee">導覽費用：</label>
           <span id="fee" name="fee">新台幣2000元</span>
         </div>
-        <button class="book-btn">開始預約行程</button>
+        <button class="book-btn" type="button" onclick="additem()">開始預約行程</button>
       </form>
     </div>
   </div>
   <div class = "c-v"></div>
   <script src="/static/attraction.js"></script>
+  <script src="/static/booking.js"></script>
 </body>
 </html>
