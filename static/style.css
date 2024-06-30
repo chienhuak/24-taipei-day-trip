@@ -233,6 +233,10 @@ nav {
     right: 16px;
 }
 
+#signout-btn {
+    display: none;
+}
+
 
 .underlink {
     text-decoration: underline;
