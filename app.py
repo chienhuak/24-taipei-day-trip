@@ -257,7 +257,7 @@ async def additem(request: Request, data:dict, myjwt: Union[str, None] = Cookie(
 	# 		id BIGINT AUTO_INCREMENT PRIMARY KEY,
 	# 		username VARCHAR(255) NOT NULL,
 	# 		attractionId BIGINT NOT NULL,
-	# 		date DATE NOT NULL,
+	# 		date DATE NOT NULL DEFAULT CURRENT_DATE,
 	# 		time ENUM('morning', 'afternoon') NOT NULL,
 	# 	 	count INT NOT NULL,	
 	# 		unitprice INT NOT NULL,
@@ -266,8 +266,6 @@ async def additem(request: Request, data:dict, myjwt: Union[str, None] = Cookie(
 	# 		"""
 	# 	mycursor.execute(query)
 	# 	mydb.commit()
-
-	print(data)
 
 	# 將資料存到 購物車 DB
 	with mysql.connector.connect(pool_name="hello") as mydb, mydb.cursor(buffered=True,dictionary=True) as mycursor :

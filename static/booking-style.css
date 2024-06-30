@@ -1,0 +1,25 @@
+body {
+    display: flex;
+    height: 100vh; /* 使內容在整個視窗高度內置中 */
+}
+
+#container {
+    /* width : 1200px; */
+    margin: auto;
+}
+
+.cards {
+    width: 80vh;
+    border: solid pink 1px;
+    background-color: rgb(221, 239, 239, 0.3);
+    margin : 0px 20px;
+}
+
+.bookingimg {
+    max-width: 200px;
+}
+
+.ibox {
+    margin: 10px;
+    border: solid rgb(128, 0, 100) 1px;
+}
