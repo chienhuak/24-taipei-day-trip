@@ -1,0 +1,121 @@
+.c-h {
+    display: flex;
+    /* margin: auto; */
+}
+
+
+.c-v {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* 可以根据需求调整 */   
+}
+
+
+.att2-style {
+    /* border : solid cyan 4px; */
+    width: 630px;
+}
+
+
+form {
+    display: flex;
+    flex-direction: column;
+    background-color: rgb(237, 237, 237);
+    padding: 15px;
+    border-radius: 15px;
+    width: 97%;
+}
+
+
+.form-group {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin: 5px 0;
+}
+
+
+.form-group label {
+    margin-right: 10px;
+    /* border : dotted pink 5px */
+}
+
+
+.att-imgbox {
+    position: relative;
+    width: 540px;
+    height: 400px;
+    /* float: left; */
+    /* border: dashed orange 5px; */
+    display: inline-block;
+}
+
+
+#slide-photos {
+    width: 540px;
+    height: 400px;
+    overflow: hidden;
+    display: block;
+}
+
+
+.arrow-img {
+    width : 70px;
+    opacity: 0.2;
+}
+
+
+.arrow-img:hover {
+    opacity: 0.8;
+}
+
+
+.arrow-left  {
+    position: absolute;
+    transform: translateY(-50%);
+    top: 50%;
+    left: 10px;
+    /* transform: translateX(-50%); */
+    z-index: 999;
+}
+
+
+.arrow-right  {
+    position: absolute;
+    transform: translateY(-50%);
+    top: 50%;
+    left: 460px;
+    /* transform: translateX(-50%); */
+    z-index: 999;
+}
+
+
+.main {
+    width: 1200px;
+    height: 400px;
+    margin: 50px auto;
+    /* border: solid yellow 4px; */
+}
+
+
+.padding {
+    padding: 15px;
+}
+
+
+.book-btn {
+    width: 140px;
+    background-color: #448899;
+    color:rgb(255, 255, 255);
+    border : solid 1px rgba(0,0,0,.125);
+    border-radius: .25em;
+    padding: 5px;
+    margin: 10px 0px;
+}
+
+
+#att-name {
+    /* border: solid green 4px; */
+    margin: 4px;
+}
+
