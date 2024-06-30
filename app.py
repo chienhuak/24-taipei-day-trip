@@ -8,6 +8,7 @@ import json
 import os
 from fastapi.staticfiles import StaticFiles
 import jwt
+import re
 
 app=FastAPI(debug=True)
 jwtkey = "iweorhfnen834"
@@ -258,7 +259,8 @@ async def additem(request: Request, data:dict, myjwt: Union[str, None] = Cookie(
 	# 		attractionId BIGINT NOT NULL,
 	# 		date DATE NOT NULL,
 	# 		time ENUM('morning', 'afternoon') NOT NULL,
-	# 		price INT NOT NULL,
+	# 	 	count INT NOT NULL,	
+	# 		unitprice INT NOT NULL,
 	# 		created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 	# 		);
 	# 		"""
@@ -282,3 +284,53 @@ async def additem(request: Request, data:dict, myjwt: Union[str, None] = Cookie(
 				"time": data["time"], 
 				"price": data["price"]})
 
+
+
+# 購物車中的預訂行程
+@app.get("/api/booking", response_class=JSONResponse)
+async def cart_api(request: Request, myjwt: Union[str, None] = Cookie(None)):
+
+	# 解碼 JWT
+	myjwtx = jwt.decode(myjwt,jwtkey,algorithms="HS256")
+
+	# 將資料存到 購物車 DB
+	with mysql.connector.connect(pool_name="hello") as mydb, mydb.cursor(buffered=True,dictionary=True) as mycursor :
+		query = """
+			SELECT username, attractionId, cart.date, time, price, attractions.name, attractions.address, attractions.file
+			FROM cart
+			JOIN attractions
+			ON attractions.id = cart.attractionId
+			WHERE username = %s
+			"""
+		mycursor.execute(query, (myjwtx["email"],))
+		results = mycursor.fetchall()
+		print(results)		
+
+		if results:
+			data = []
+			for result in results:
+
+				# Split the URLs by comma
+				urls = result["file"].split(',')
+
+				# Use regex to find the first PNG or JPG URL
+				first_image_url = None
+				for url in urls:
+					match = re.search(r'https?://\S+\.(?:png|jpe?g)', url, re.IGNORECASE)
+					if match:
+						first_image_url = match.group(0)
+						break
+
+				data.append({
+					"attraction": {
+						"id":int(result["attractionId"]),
+						"name":result["name"],
+						"address":result["address"],
+						"image":first_image_url} ,
+					"date": result["date"],
+					"time": result["time"],
+					"price": result["price"]
+				})
+			return {"data": data}
+		else:
+			return {"data": None}
