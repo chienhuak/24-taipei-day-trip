@@ -6,9 +6,15 @@ let photoIndex
 const photoTag = document.querySelector('#slide-photos')
 
 
-document.addEventListener('DOMContentLoaded', function() {
-    att(id);
+// document.addEventListener('DOMContentLoaded', function() {
+//     checkLoginStatus()
+//     att(id)
+//     slidephotos()
 
+// });
+
+
+function slidephotos() {
     const arrowLeft = document.querySelector('.arrow-left');
     const arrowRight = document.querySelector('.arrow-right');
     // const container = document.querySelector('#container1');
@@ -26,7 +32,7 @@ document.addEventListener('DOMContentLoaded', function() {
             photoTag.src = photos[++photoIndex]
         }
     });
-});
+}
 
 
 function att(id) {

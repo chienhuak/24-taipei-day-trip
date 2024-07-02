@@ -141,11 +141,36 @@ function signout() {
     const signoutBtn = document.getElementById('signout-btn')
     const signinBtn = document.getElementById('signin-card')
 
-    // 清除 cookie 中的 token
-    document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;"
+    // 清除 cookie 中的 myjwt
+    document.cookie = "myjwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;"
     signoutBtn.style.display = "none"
     signinBtn.style.display = "inline-block"
 
     // 重定向到首頁
     window.location.href = '/'
 }
+
+
+
+async function checkLoginStatus() {
+
+    console.log('checkLoginStatus running..')
+    const signoutBtn = document.getElementById('signout-btn')
+    const signinBtn = document.getElementById('signin-card')
+    const response = await fetch('/api/user/auth', {
+        method: 'GET',
+        credentials: 'include'
+    });
+
+    if (response.ok) {
+        console.log('checkLoginStatus signin..')
+        signoutBtn.style.display = "inline-block"
+        signinBtn.style.display = "none"
+    } else {
+        console.log('checkLoginStatus signout..')
+        signoutBtn.style.display = "none"
+        signinBtn.style.display = "inline-block"
+    }
+}
+
+// window.onload = checkLoginStatus;

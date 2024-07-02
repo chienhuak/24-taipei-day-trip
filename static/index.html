@@ -66,5 +66,12 @@
   <!-- <script src="{{url_for('static',path='/attractions.js')}}"></script>  -->
   <script src="/static/attractions.js"></script>
   <script src="/static/auth.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function(){
+        mrts()
+        photos(0)
+        checkLoginStatus()
+    })    
+  </script>
 </body>
 </html>

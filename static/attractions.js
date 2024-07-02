@@ -107,10 +107,11 @@ function photos(page, keyword = "") {
 }
 
 
-document.addEventListener('DOMContentLoaded', function(){
-    mrts()
-    photos(0)
-})
+// document.addEventListener('DOMContentLoaded', function(){
+//     mrts()
+//     photos(0)
+//     checkLoginStatus()
+// })
 
 
 // 監聽滾動事件

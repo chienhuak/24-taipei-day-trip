@@ -21,13 +21,13 @@ async function additem() {
 }
 
 
+// document.addEventListener('DOMContentLoaded', function(){
+//     checkLoginStatus()
+//     cartlist()
+// })
+
 
 // 購物車中所有待確認行程 render 到畫面中
-document.addEventListener('DOMContentLoaded', function(){
-    cartlist()
-})
-
-
 function cartlist() {
 
     const container = document.getElementById('container'); // 取得容器元素

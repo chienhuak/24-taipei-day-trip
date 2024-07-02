@@ -146,24 +146,30 @@ async def mrts(request: Request):
 # 登入會員資訊
 @app.get("/api/user/auth", response_class=JSONResponse)
 async def signin(request: Request, myjwt: Union[str, None] = Cookie(None)):
-	print(myjwt)
-	if myjwt:
-		try:
-			myjwtx = jwt.decode(myjwt,jwtkey,algorithms="HS256")
-			print(myjwtx)
-			return {
-				"data" : {
-					"id": myjwtx["id"],
-					"name" : myjwtx["name"] ,
-					"email" : myjwtx["email"]
-				}
+	# print(myjwt)
+	# if myjwt:
+	try:
+		myjwtx = jwt.decode(myjwt,jwtkey,algorithms="HS256")
+		# print(myjwtx)
+		return {
+			"data" : {
+				"id": myjwtx["id"],
+				"name" : myjwtx["name"] ,
+				"email" : myjwtx["email"]
 			}
+		}
 
-		except jwt.ExpiredSignatureError:
-			print("expired")
-			return JSONResponse(status_code=401, content={
-				"data": None
-				}) 
+	except jwt.ExpiredSignatureError:
+		print("expired")
+		return JSONResponse(status_code=401, content={
+			"data": None
+			}) 
+
+	except Exception as e:
+		print("other exception")
+		return JSONResponse(status_code=401, content={
+			"data": None
+			}) 
 
 
 # 登入會員

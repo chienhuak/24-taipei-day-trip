@@ -13,18 +13,25 @@
     <a class="home-link" href="/">台北一日遊</a>
     <div>
       <a class = "a-style-1" href="">預定行程</a>
-      <a id = "signin-card" class = "a-style-1" href="" onclick="card(); return false;">登入/註冊</a>
-      <a id = "signout-btn" class = "a-style-1" href="" onclick="signout()">登出</a>
+      <a id = "signin-card" class = "a-style-1" href="" onclick="card(); return false;">登入/註冊</a>   <!-- return false 不跳頁至 a tag href -->
+      <a id = "signout-btn" class = "a-style-1" href="/" onclick="signout()">登出</a>
     </div>
   </nav>
-  <div name="placeholder" style="height:50px;"></div>
+  <div name="placeholder" style="height:10px;"></div>
 
 
   <div id="container">
-    <h3>您好，<span></span>，待預定的行程如下：</h3>
+      <h3 id="sentence">您好，<span></span>，待預定的行程如下：</h3>
   </div>
 
 
   <script src="/static/booking.js"></script>
+  <script src="/static/auth.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function(){
+      checkLoginStatus()
+      cartlist()
+    })
+  </script>
 </body>
 </html>

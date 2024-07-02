@@ -1,18 +1,8 @@
-body {
-    display: flex;
-    height: 100vh; /* 使內容在整個視窗高度內置中 */
-}
-
-#container {
-    /* width : 1200px; */
-    margin: auto;
-}
-
 .cards {
     width: 80vh;
     border: solid pink 1px;
     background-color: rgb(221, 239, 239, 0.3);
-    margin : 0px 20px;
+    margin : 0px auto;
 }
 
 .bookingimg {
@@ -22,4 +12,28 @@ body {
 .ibox {
     margin: 10px;
     border: solid rgb(128, 0, 100) 1px;
+}
+
+
+nav {
+    /* position: relative; 確保 <nav> 的位置不會影響後續元素 */
+    position: fixed;
+    background-color: #f8f8f8;
+    border-bottom: 1px solid #ddd;
+    z-index: 1; /* 確保 <nav> 在其他元素之上顯示 */
+}
+
+#container {
+    width: 100%;
+    margin: 50px auto; /* 增加上邊距，使其與 <nav> 保持距離 */
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+#sentence {
+    margin: 0;
+    padding: 10px 0;
+    border-bottom: 1px solid #ddd;
+    width: 80vh;
+    margin : 0px auto;
 }
