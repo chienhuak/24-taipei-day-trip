@@ -31,7 +31,8 @@ nav {
 /* Container needed to position the button. Adjust the width as needed */
 .container {
     position: relative;
-    width: calc(100vw - scrollbarWidth);
+    /* width: calc(100vw - scrollbarWidth); */
+    width: 100vw;
   }
 
 /* Make the image responsive */
@@ -71,7 +72,8 @@ nav {
 /* Style the button and place it in the middle of the container/image */
 .container .searchbar {
     position: absolute;
-    width: 1200px;
+    max-width: 1200px;
+    width: 95%;
     top: 50%;
     /* margin:auto; */
     left: 50%;
@@ -242,6 +244,12 @@ nav {
     text-decoration: underline;
     color : blueviolet;
 }
+
+/* 
+html {
+    overflow-y: scroll;
+} */
+
 
 @media (max-width: 1200px){
 
