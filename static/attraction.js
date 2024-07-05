@@ -40,7 +40,9 @@ function att(id) {
     const imgBox = document.querySelector('.att-imgbox')
     const attName = document.querySelector('#att-name')
     const mrtName = document.querySelector('#mrt-name')
-    
+    const desc = document.querySelector('.desc')
+    const address = document.querySelector('.address')
+    const transport = document.querySelector('.transport')
 
 
     fetch(`/api/attraction/${id}`)
@@ -48,6 +50,7 @@ function att(id) {
     .then(data => {
         // console.log(data)
         attName.innerText = data.data[0].name
+        mrtName.innerText = data.data[0].mrt
         photos = data.data[0].images
         if (photos.length > 0) {
             photoIndex = 0 //抓第一張圖
@@ -63,6 +66,12 @@ function att(id) {
             lnk.as = 'image';
             lnk.crossorigin="anonymous";
             document.head.appendChild(lnk);
+
+        // 載入景點敘述
+        desc.innerText = data.data[0].description
+        address.innerText = data.data[0].address
+        transport.innerText = data.data[0].transport
+
         }
     })
 }
