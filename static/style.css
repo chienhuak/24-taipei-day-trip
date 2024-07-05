@@ -251,6 +251,17 @@ nav {
     color : blueviolet;
 }
 
+
+.footer {
+    align-items: center; 
+    height: 104px;
+    background-color: #757575;
+    color: white;
+    text-align: center;
+    line-height: 104px;
+}
+
+
 /* 
 html {
     overflow-y: scroll;
