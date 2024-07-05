@@ -30,7 +30,12 @@ async function additem() {
 // 購物車中所有待確認行程 render 到畫面中
 function cartlist() {
 
-    const container = document.getElementById('container'); // 取得容器元素
+    const container = document.getElementById('container') // 取得容器元素
+    const amount = document.getElementById('amount')
+    let totalAmount = 0
+    const updateTotalAmount = () => {
+        amount.innerText = `總價: 新台幣 ${totalAmount} 元`
+    }
 
     fetch('/api/booking')
     .then(response => response.json())
@@ -43,6 +48,17 @@ function cartlist() {
 
             const pick = document.createElement('input')
             pick.type = 'checkbox'
+            pick.dataset.price = data.data[i].price; // 將價格儲存在 checkbox dataset 中
+
+            // 幫 checkbox 增加 eventlintener 計算總金額
+            pick.addEventListener('change', (event) => {
+                if (event.target.checked) {
+                    totalAmount += parseInt(event.target.dataset.price)
+                } else {
+                    totalAmount -= parseInt(event.target.dataset.price)
+                }
+                updateTotalAmount()
+            })
 
             const ibox = document.createElement('div')
             ibox.className = 'ibox'
@@ -81,6 +97,9 @@ function cartlist() {
 
             container.appendChild(cards_div); // 將生成的元素附加到 container
         }
+
+        updateTotalAmount()
+
     })
     .catch(error => {
         console.error('Error fetching data:', error);
