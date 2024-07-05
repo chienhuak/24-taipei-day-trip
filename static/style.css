@@ -20,12 +20,14 @@ nav {
     align-items: center;
     justify-content: space-between;
     width: 100%;
+    height: 50px;
     /* width: calc(100vw - scrollbarWidth); */
     /* border : dotted 3px orange; */
     box-sizing: border-box;
     position: fixed;
     z-index: 999;
-    background-color: white;
+    background-color: #f8f8f8;
+    border-bottom: 1px solid #ddd;
 }
 
 /* Container needed to position the button. Adjust the width as needed */
@@ -91,8 +93,12 @@ nav {
   }
 
 .a-style-1 {
+    display: inline-block;
     padding: 3px;
     text-decoration: none;
+    width:80px;
+    text-align: center;
+    color:  #448899;
 }
 
 #container2 {

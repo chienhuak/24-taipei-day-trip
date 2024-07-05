@@ -9,12 +9,31 @@
   <link rel="stylesheet" href="/static/booking-style.css">
 </head>
 <body>
+  <div class="overlay" id="overlay"></div>
   <nav>
     <a class="home-link" href="/">台北一日遊</a>
     <div>
-      <a class = "a-style-1" href="">預定行程</a>
+      <a class = "a-style-1" href="/booking">預定行程</a>
       <a id = "signin-card" class = "a-style-1" href="" onclick="card(); return false;">登入/註冊</a>   <!-- return false 不跳頁至 a tag href -->
       <a id = "signout-btn" class = "a-style-1" href="/" onclick="signout()">登出</a>
+    </div>
+    <!-- pop up memu -->
+    <div class = "card">
+      <button class = "close-btn" type="button" onclick="card_close()">X</button>
+      <h1>登入會員帳號</h1>
+      <input type="text"  id = "email" class = "popup-input" placeholder="輸入電子信箱">
+      <input type="text"  id = "password" class = "popup-input" placeholder="輸入密碼">
+      <button class = "popup-btn" onclick="signin()">登入帳戶</button>
+      <h3>還沒有帳戶？點此<span class="underlink" onclick="showRegister()">註冊</span></h3>
+    </div>
+    <div class = "card" id = "cardx">
+      <button class = "close-btn" type="button" onclick="card_close()">X</button>
+      <h1>註冊會員帳號</h1>
+      <input type="text"  id = "namex" class = "popup-input" placeholder="輸入暱稱">
+      <input type="text"  id = "emailx" class = "popup-input" placeholder="輸入電子信箱">
+      <input type="text"  id = "passwordx" class = "popup-input" placeholder="輸入密碼">
+      <button class = "popup-btn" onclick="register()">註冊</button>
+      <h3 id="note"></h3>
     </div>
   </nav>
   <div name="placeholder" style="height:10px;"></div>

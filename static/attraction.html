@@ -8,10 +8,11 @@
   <link rel="stylesheet" href="/static/att-style.css">
 </head>
 <body>
+  <div class="overlay" id="overlay"></div>
   <nav>
     <a class="home-link" href="/">台北一日遊</a>
     <div>
-      <a class = "a-style-1" href="">預定行程</a>
+      <a class = "a-style-1" href="/booking">預定行程</a>
       <a id = "signin-card" class = "a-style-1" href="" onclick="card(); return false;">登入/註冊</a>
       <a id = "signout-btn" class = "a-style-1" href="" onclick="signout()">登出</a>
     </div>
@@ -35,15 +36,15 @@
     </div>
   </nav>
   <div name="placeholder" style="height:50px;"></div>
-  <div class = "c-h main">
+  <div class = "main-h-v">
     <div class = "att-imgbox">
       <img id = "slide-photos">
       <a href="#" class="arrow-left"><img class="arrow-img" src="/static/images/Hovered_l.png"></a>
       <a href="#" class="arrow-right"><img class="arrow-img" src="/static/images/Hovered_r.png"></a>
     </div>
-    <div class="c-v att2-style padding">
+    <div class="att-r-box-style">
       <h2 id = "att-name">景點名稱</h2>
-      <p id = "mrt-name">公共藝術 at </p>
+      <p>公共藝術 at <span id = "mrt-name"></span> </p>
       <form id="bookingForm" action="POST">
         <label>訂購導覽行程</label>
         <h3>以此景點為中心的一日行程，帶您探索城市角落故事</h3>
@@ -64,7 +65,14 @@
       </form>
     </div>
   </div>
-  <div class = "c-v"></div>
+  <div class = "main-v">
+    <hr>
+    <p class="desc"></p>
+    <h3>景點地址：</h3>
+    <p class="address"></p>
+    <h3>交通方式：</h3>
+    <p class="transport"></p>
+  </div>
   <script src="/static/attraction.js"></script>
   <script src="/static/booking.js"></script>
   <script src="/static/auth.js"></script>
