@@ -300,7 +300,7 @@ async def cart_api(request: Request, myjwt: Union[str, None] = Cookie(None)):
 	# 將資料存到 購物車 DB
 	with mysql.connector.connect(pool_name="hello") as mydb, mydb.cursor(buffered=True,dictionary=True) as mycursor :
 		query = """
-			SELECT username, attractionId, cart.date, time, price, attractions.name, attractions.address, attractions.file
+			SELECT cart.id, username, attractionId, cart.date, time, price, attractions.name, attractions.address, attractions.file
 			FROM cart
 			JOIN attractions
 			ON attractions.id = cart.attractionId
@@ -308,7 +308,7 @@ async def cart_api(request: Request, myjwt: Union[str, None] = Cookie(None)):
 			"""
 		mycursor.execute(query, (myjwtx["email"],))
 		results = mycursor.fetchall()
-		print(results)		
+		# print(results)		
 
 		if results:
 			data = []
@@ -326,6 +326,7 @@ async def cart_api(request: Request, myjwt: Union[str, None] = Cookie(None)):
 						break
 
 				data.append({
+					"id":result["id"],
 					"attraction": {
 						"id":int(result["attractionId"]),
 						"name":result["name"],
@@ -338,3 +339,47 @@ async def cart_api(request: Request, myjwt: Union[str, None] = Cookie(None)):
 			return {"data": data}
 		else:
 			return {"data": None}
+
+
+# 產生訂單
+@app.post("/api/order", response_class=JSONResponse)
+async def create_order(request: Request, data:dict):
+
+	data = await request.json()
+	tappay_url = "https://sandbox.tappaysdk.com/tpc/payment/pay-by-prime"
+	headers={
+		"Content-Type": "application/json",
+		"x-api-key": "app_O0KJWIEiKdyLhesRLbj8AD5qdUy01uwMtk7aNpCoK4yb24qOHaeNcwWzCFJ1"
+	}
+	response = requests.post(tappay_url, headers=headers, json=payload)
+	result = response.json()
+
+	if result['status'] == 0:
+		print(data)
+
+        # return {
+		# 	"prime": data['prime'],
+		# 	"order": {
+		# 		"price": data['amount'],
+		# 		"trip": {
+		# 		"attraction": {
+		# 			"id": 10,
+		# 			"name": "平安鐘",
+		# 			"address": "臺北市大安區忠孝東路 4 段",
+		# 			"image": "https://yourdomain.com/images/attraction/10.jpg"
+		# 		},
+		# 		"date": data['date'],
+		# 		"time": data['time']
+		# 		},
+		# 		"contact": {
+		# 		"name": "彭彭彭",
+		# 		"email": "ply@ply.com",
+		# 		"phone": "0912345678"
+		# 		}
+		# 	}
+		# 	}
+		return {"success": True, "message": "付款成功"}
+    # else:
+	# 	return {"success": False, "message": "付款失敗"}
+
+

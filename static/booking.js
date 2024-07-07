@@ -26,6 +26,7 @@ async function additem() {
 //     cartlist()
 // })
 
+let order_trips = []
 
 // 購物車中所有待確認行程 render 到畫面中
 function cartlist() {
@@ -34,7 +35,7 @@ function cartlist() {
     const amount = document.getElementById('amount')
     let totalAmount = 0
     const updateTotalAmount = () => {
-        amount.innerText = `總價: 新台幣 ${totalAmount} 元`
+        amount.innerText = totalAmount
     }
 
     fetch('/api/booking')
@@ -49,15 +50,20 @@ function cartlist() {
             const pick = document.createElement('input')
             pick.type = 'checkbox'
             pick.dataset.price = data.data[i].price; // 將價格儲存在 checkbox dataset 中
+            pick.dataset.cartId = data.data[i].id;
 
             // 幫 checkbox 增加 eventlintener 計算總金額
             pick.addEventListener('change', (event) => {
+                const cartId = event.target.dataset.id
                 if (event.target.checked) {
                     totalAmount += parseInt(event.target.dataset.price)
+                    order_trips[cartId] = true
                 } else {
                     totalAmount -= parseInt(event.target.dataset.price)
+                    order_trips[cartId] = false
                 }
                 updateTotalAmount()
+                console.log(order_trips)
             })
 
             const ibox = document.createElement('div')
@@ -75,16 +81,16 @@ function cartlist() {
             name_p.innerText = data.data[i].attraction.name
 
             const date_p = document.createElement('p')
-            date_p.innerText = `Date: ${data.data[i].date}`
+            date_p.innerText = `日期： ${data.data[i].date}`
 
             const time_p = document.createElement('p')
-            time_p.innerText = `Time: ${data.data[i].time}`
+            time_p.innerText = `時間： ${data.data[i].time}`
 
             const price_p = document.createElement('p');
-            price_p.innerText = `Price: ${data.data[i].price}`
+            price_p.innerText = `費用： 新台幣 ${data.data[i].price} 元`
 
             const address_p = document.createElement('p')
-            address_p.innerText = data.data[i].attraction.address
+            address_p.innerText = `地點： ${data.data[i].attraction.address}`
 
             cards_div.appendChild(pick)
             cards_div.appendChild(ibox)

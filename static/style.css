@@ -259,7 +259,9 @@ nav {
     color: white;
     text-align: center;
     line-height: 104px;
-    bottom:0px;
+    /* position: fixed;
+    bottom:0;
+    width: 100%; */
 }
 
 

@@ -43,9 +43,28 @@
       <h3 id="sentence">您好，<span></span>，待預定的行程如下：</h3>
   </div>
 
-  <div class="checkout">
-    <p id="amount"></p>
-    <button id="checkout-btn">確認訂購並付款</button>
+  <div class="checkout-info c-v">
+    <hr>
+    <h3>您的聯絡資訊</h3>
+    <label for="" class="input-style">聯絡姓名：<input type="text" id="order-name"></label>
+    <label for="" class="input-style">聯絡信箱：<input type="text" id="order-email"></label>
+    <label for="" class="input-style">手機號碼：<input type="text" id="order-phone"></label>
+    <h5>請保持手機暢通，準時到達，導覽人員將用手機與您聯繫，務必留下正確的聯絡方式。</h5>
+  </div>
+    <hr>
+  <div class="checkout-info c-v">
+    <h3>信用卡付款資訊</h3>
+    <div class="form-group"> 卡片號碼：<div class="tpfield" id="card-number"></div></div>
+    <div class="form-group"> 過期時間：<div class="tpfield" id="card-expiration-date"></div></div>
+    <div class="form-group"> 驗證密碼：<div class="tpfield" id="card-ccv"></div></div>
+    <!-- <label for="" class="input-style" >卡片號碼：<input id="card-number"></label>
+    <label for="" class="input-style" >過期時間：<input id="card-expiration-date"></label>
+    <label for="" class="input-style" >驗證密碼：<input id="card-ccv"></label> -->
+  </div>
+    <hr>
+  <div id="checkout c-v">
+    <p>總價: 新台幣 <span id="amount"></span> 元</p>
+    <button id="checkout-btn" onclick="onSubmit()">確認訂購並付款</button>
   </div>
   <footer class="footer">COPYRIGHT 	&#169; 2024 台北一日遊</footer>
 
@@ -57,5 +76,7 @@
       cartlist()
     })
   </script>
+  <script src="https://js.tappaysdk.com/sdk/tpdirect/v5.14.0"></script>
+  <script src="/static/tappay.js"></script>
 </body>
 </html>

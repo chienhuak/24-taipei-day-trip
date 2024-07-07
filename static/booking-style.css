@@ -38,6 +38,23 @@ nav {
     margin : 0px auto;
 }
 
+.checkout-info {
+    /* width: 100%;
+    margin: 50px auto; /* 增加上邊距，使其與 <nav> 保持距離 */
+    /* padding: 20px; */ 
+    width: 80vw;
+    margin: auto;
+}
+
+#checkout {
+    /* width: 100%;
+    margin: 50px auto; /* 增加上邊距，使其與 <nav> 保持距離 */
+    /* padding: 20px; */ 
+    width: 80vw;
+    margin: auto;
+}
+
+
 #checkout-btn {
     width: 120px;
     padding: 5px;
@@ -46,4 +63,16 @@ nav {
     color:rgb(255, 255, 255);
     border : solid 1px rgba(0,0,0,.125);
     border-radius: .25em;
+}
+
+.input-style {
+    margin: 5px 0px;
+}
+
+.tpfield {
+    height: 20px;
+    width: 169.6px;
+    border: 1px solid gray;
+    margin: 3px 0;
+    padding: 0.6px;
 }
