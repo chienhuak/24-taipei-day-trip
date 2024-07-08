@@ -80,7 +80,7 @@ form {
     top: 50%;
     left: 10px;
     /* transform: translateX(-50%); */
-    z-index: 999;
+    z-index: 998;
 }
 
 
@@ -90,7 +90,7 @@ form {
     top: 50%;
     left: 460px;
     /* transform: translateX(-50%); */
-    z-index: 999;
+    z-index: 998;
 }
 
 
@@ -135,7 +135,7 @@ nav {
     position: fixed;
     background-color: #f8f8f8;
     border-bottom: 1px solid #ddd;
-    z-index: 1; /* 確保 <nav> 在其他元素之上顯示 */
+    z-index: 999; /* 確保 <nav> 在其他元素之上顯示 */
     height: 50px;
 }
 
@@ -155,27 +155,28 @@ nav {
 
 .main-v {
     flex-shrink: 1;
-    width: 80%;
-    min-width: 600px;
+    width: 500px;
+    /* min-width: 600px; */
 }
 
 .att-r-box-style {
-    width: 100%;
+    width: 540px;
 }
 
-form {
-    flex-shrink: 1;
-    width: 100%;
+#bookingForm {
+    /* flex-shrink: 1; */
+    width: 520px;
     /* border: solid rgb(86, 162, 28) 5px; */
 }
 
-.att-imgbox {
+/* .att-imgbox {
     display: flex;
     margin: auto;
-}
+} */
 
 #slide-photos {
     flex-shrink: 1;
+    /* margin: 30px 0px; */
 }
 
 }
@@ -208,6 +209,10 @@ form {
 #slide-photos {
     width: 100%;
     height: 100%;
+}
+
+.arrow-right  {
+    left: 280px;
 }
 
 }
