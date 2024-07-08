@@ -51,7 +51,7 @@ nav {
     background-color: #448899;
     padding: 6px;
     margin:0;
-    border:solid #1c414a 1px;
+    border:solid #1c414a00 1px;
     border-radius: 0 5px 5px 0;
 }
 
@@ -70,7 +70,7 @@ nav {
     margin: 0;
     padding: 10px;
     float:left;
-    border:solid #1c414a 1px;
+    border:solid #1c414a00 1px;
     border-radius: 5px 0 0 5px;
 }
 
@@ -119,7 +119,7 @@ nav {
     height: 242px;
     width: 270px;
     position: relative;
-    border: solid gray 3px;
+    border: solid rgba(128, 128, 128, 0.39) 1px;
     margin: 10px auto ;
 }
 
