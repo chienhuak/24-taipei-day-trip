@@ -23,6 +23,7 @@ function slidephotos() {
         event.preventDefault();
         if (photos.length > 0 && photoIndex > 0) {
             photoTag.src = photos[--photoIndex]
+            updateActiveButton(photoIndex)
         }
     });
 
@@ -30,6 +31,7 @@ function slidephotos() {
         event.preventDefault();
         if (photos.length > 0 && photoIndex < photos.length-1 ) {
             photoTag.src = photos[++photoIndex]
+            updateActiveButton(photoIndex)
         }
     });
 }
@@ -43,6 +45,9 @@ function att(id) {
     const desc = document.querySelector('.desc')
     const address = document.querySelector('.address')
     const transport = document.querySelector('.transport')
+
+    const slidePhotos = document.getElementById('slide-photos')
+    const btnContainer = document.getElementById('btn-container')
 
 
     fetch(`/api/attraction/${id}`)
@@ -72,6 +77,34 @@ function att(id) {
         address.innerText = data.data[0].address
         transport.innerText = data.data[0].transport
 
+        // 生成按鈕
+        btnContainer.innerHTML = '' // 清空按鈕容器
+        photos.forEach((photo, index) => {
+            const button = document.createElement('button')
+            button.classList.add('dot')
+            button.onclick = () => {
+                slidePhotos.src = photo
+                updateActiveButton(index)
+                photoIndex = index
+            }
+            btnContainer.appendChild(button)
+        })
+
+        // 預設選擇第一個按鈕
+        updateActiveButton(0)
+
+        }
+    })
+}
+
+
+function updateActiveButton(activeIndex) {
+    const buttons = document.querySelectorAll('#btn-container .dot')
+    buttons.forEach((button, index) => {
+        if (index === activeIndex) {
+            button.classList.add('active')
+        } else {
+            button.classList.remove('active')
         }
     })
 }

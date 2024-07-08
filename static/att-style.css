@@ -180,6 +180,31 @@ nav {
 }
 
 
+#btn-container {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    justify-content: center;
+    gap: 10px; /* 按鈕的間距 */
+}
+
+/* 按鈕樣式 */
+#btn-container .dot {
+    width: 8px;
+    height: 8px;
+    background-color: rgb(221, 227, 231);
+    border: rgb(255, 255, 255) 1px solid;
+    border-radius: 25%;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+#btn-container .dot.active {
+    background-color: rgb(0, 0, 0);
+}
+
 
 
 @media (max-width: 600px) {
