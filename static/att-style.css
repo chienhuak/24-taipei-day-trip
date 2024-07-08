@@ -145,28 +145,26 @@ nav {
 
 
 .main-h-v {
-    display: block;
+    display: flex;
     flex-direction: column;
     margin: auto;
     /* border: solid pink 5px; */
     height: auto;
-    width: 600px;
+    width: 540px;
 }
 
 .main-v {
     flex-shrink: 1;
     width: 500px;
-    /* min-width: 600px; */
+    height: auto;
 }
 
 .att-r-box-style {
-    width: 540px;
+    width: 100%;
 }
 
 #bookingForm {
-    /* flex-shrink: 1; */
-    width: 520px;
-    /* border: solid rgb(86, 162, 28) 5px; */
+    width: 100%;
 }
 
 /* .att-imgbox {
