@@ -40,7 +40,31 @@ form {
 
 .form-group label {
     margin-right: 10px;
-    /* border : dotted pink 5px */
+    display: inline-block;
+    cursor: pointer;
+    font-size: 16px;
+    color: #000;
+    position: relative;
+}
+
+.radio-btn-style {
+    appearance: none; /* 移除預設樣式 */
+    width: 18px;
+    height: 18px;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    background-color: #fff;
+    cursor: pointer;
+}
+
+.radio-btn-style:checked {
+    background-color: #448899;
+}
+
+.radio-btn-style:checked::before {
+    display: block;
+    border-radius: 50%;
+    background-color: #fff;
 }
 
 
@@ -64,7 +88,7 @@ form {
 
 
 .arrow-img {
-    width : 70px;
+    width : 36px;
     opacity: 0.2;
 }
 
@@ -88,7 +112,7 @@ form {
     position: absolute;
     transform: translateY(-50%);
     top: 50%;
-    left: 460px;
+    left: 494px;
     /* transform: translateX(-50%); */
     z-index: 998;
 }
@@ -140,6 +164,9 @@ nav {
 }
 
 
+.hr-style {
+    border: 1px solid #ddd;
+}
 
 @media (max-width: 1200px){
 
@@ -192,13 +219,14 @@ nav {
 
 /* 按鈕樣式 */
 #btn-container .dot {
-    width: 8px;
-    height: 8px;
+    width: 12px;
+    height: 12px;
     background-color: rgb(221, 227, 231);
     border: rgb(255, 255, 255) 1px solid;
-    border-radius: 25%;
+    border-radius: 50%;
     cursor: pointer;
     transition: 0.3s;
+    padding: 0; /* 取消padding才可以顯示為圓形 */
 }
 
 #btn-container .dot.active {
@@ -235,7 +263,7 @@ form {
 }
 
 .arrow-right  {
-    left: 280px;
+    left: 314px;
 }
 
 }

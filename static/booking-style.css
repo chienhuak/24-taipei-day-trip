@@ -1,17 +1,29 @@
 .cards {
-    width: 80vh;
+    width: 980px;
+    height: 200px;
     border: solid pink 1px;
     background-color: rgb(221, 239, 239, 0.3);
-    margin : 0px auto;
+    margin : 8px auto;
 }
 
 .bookingimg {
-    max-width: 200px;
+    width: 250px;
+    height: 200px;
 }
 
 .ibox {
-    margin: 10px;
-    border: solid rgb(128, 0, 100) 1px;
+    /* margin: 10px; */
+    /* border: solid rgb(128, 0, 100) 1px; */
+    width: 250px;
+    height: 200px;
+}
+
+.tbox {
+    width: 700px;
+    height: 170px;
+    padding: 15px;
+    box-sizing: border-box;
+    line-height: 15px;
 }
 
 
@@ -25,7 +37,7 @@ nav {
 
 #container {
     width: 100%;
-    margin: 50px auto; /* 增加上邊距，使其與 <nav> 保持距離 */
+    margin: 50px 0px auto; /* 增加上邊距，使其與 <nav> 保持距離 */
     padding: 20px;
     box-sizing: border-box;
 }
@@ -34,24 +46,23 @@ nav {
     margin: 0;
     padding: 10px 0;
     border-bottom: 1px solid #ddd;
-    width: 80vh;
+    width: 100%;
     margin : 0px auto;
 }
 
 .checkout-info {
-    /* width: 100%;
-    margin: 50px auto; /* 增加上邊距，使其與 <nav> 保持距離 */
-    /* padding: 20px; */ 
-    width: 80vw;
+    width: 980px;
+    height: auto;
     margin: auto;
+    padding: 25px;
+    box-sizing: border-box;
+    border-bottom: 1px solid #ddd;
 }
 
 #checkout {
-    /* width: 100%;
-    margin: 50px auto; /* 增加上邊距，使其與 <nav> 保持距離 */
-    /* padding: 20px; */ 
-    width: 80vw;
+    width: 980px;
     margin: auto;
+    text-align: right; /* 確保內部內容靠右 */
 }
 
 

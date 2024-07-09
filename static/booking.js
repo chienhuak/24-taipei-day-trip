@@ -18,6 +18,7 @@ async function additem() {
         },
         body: JSON.stringify({ "attractionId":attractionId, "date":date, "time":time, "price":price })
     });
+    alert('已加入購物車')
 }
 
 

@@ -55,8 +55,8 @@
         </div>
         <div class="form-group">
           <label for="ampm">選擇時間：</label>
-          <input onclick="updateFee()" id = "am" name="ampm" type="radio" value="morning" checked>上半天
-          <input onclick="updateFee()" id = "pm" name="ampm" type="radio" value="afternoon">下半天
+          <input onclick="updateFee()" id = "am" name="ampm" class="radio-btn-style" type="radio" value="morning" checked>上半天
+          <input onclick="updateFee()" id = "pm" name="ampm" class="radio-btn-style" type="radio" value="afternoon">下半天
         </div>
         <div class="form-group">
           <label for="fee">導覽費用：</label>
@@ -67,7 +67,7 @@
     </div>
   </div>
   <div class = "main-v">
-    <hr>
+    <hr class = "hr-style">
     <p class="desc"></p>
     <h3>景點地址：</h3>
     <p class="address"></p>
@@ -85,7 +85,7 @@
       checkLoginStatus()
       att(id)
       slidephotos()
-      document.getElementById('date').valueAsDate = new Date()
+      // document.getElementById('date').valueAsDate = new Date()
     })
   </script>
 </body>
