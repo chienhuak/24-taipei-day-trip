@@ -209,26 +209,41 @@ nav {
     display: none;
 } 
 
+.card-decorator {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 10px; /* 裝飾條的高度 */
+    background-color: #448899; /* 裝飾條的顏色 */
+}
+
+
 ::placeholder {
     color: rgb(187, 198, 198);
 }
 
 .popup-input {
-    width: 320px;
-    padding: 5px;
+    height: 47px;
+    width: 310px;
+    padding: 15px;
     margin: 10px 0px;
     border : solid 1px rgba(0,0,0,.125);
     border-radius: .25em;
+    box-sizing: border-box;
 }
 
 .popup-btn {
-    width: 320px;
+    font-size: 19px;
+    height: 47px;
+    width: 310px;
     padding: 5px;
     margin: 10px 0px;
     background-color: #448899;
     color:rgb(255, 255, 255);
     border : solid 1px rgba(0,0,0,.125);
     border-radius: .25em;
+    box-sizing: border-box;
 }
 
 .overlay {
@@ -251,6 +266,9 @@ nav {
     position: absolute;
     top: 16px;
     right: 16px;
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
 }
 
 #signout-btn {
@@ -276,6 +294,19 @@ nav {
     width: 100%; */
 }
 
+.note {
+    color: red;
+    width: 310px;
+    margin: auto;
+}
+
+.center-text {
+    text-align: center
+}
+
+.change-card:hover {
+    cursor: pointer; /* 當 hover 時變成指針形狀 */
+}
 
 /* 
 html {
