@@ -1,11 +1,17 @@
 from fastapi import *
+from datetime import datetime,timedelta,timezone
 from fastapi.responses import FileResponse
 from fastapi.responses import JSONResponse
-from typing import Optional
+from typing import Optional, Union
 import mysql.connector
 import json
 import os
+from fastapi.staticfiles import StaticFiles
+import jwt
+import re
+
 app=FastAPI(debug=True)
+jwtkey = "iweorhfnen834"
 
 # 從環境變數中讀取 MySQL 密碼
 mysql_password = os.environ.get("MYSQL_PASSWORD")
@@ -18,7 +24,8 @@ with mysql.connector.connect(
 	pool_name="hello"
     ):pass
 
-
+# 設定靜態檔案路徑
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # Static Pages (Never Modify Code in this Block)
 @app.get("/", include_in_schema=False)
@@ -80,20 +87,31 @@ async def attractions(request: Request, attractionId:int):
 			query = """
 			SELECT id, name, CAT as category, description, address, direction as transport, mrt, latitude as lat, longitude as lng, file as images
 			FROM attractions 
-			WHERE id = %s
+			WHERE id = %s 
 			ORDER BY id
 			"""
 			mycursor.execute(query, (attractionId,))
 			results = mycursor.fetchall()
 
-		if results :
-			return {"data": results}
-		else :
-			return JSONResponse(status_code=400, content={
-				"error": True,
-				"message": "景點編號不存在"
-				}) 
+			if results :
+				with mydb.cursor(buffered=True) as mycursor2 :
+					query = """
+					SELECT url
+					FROM urls 
+					WHERE id = %s AND (url like '%.jpg' OR url like '%.png')
+					"""
+					mycursor2.execute(query, (attractionId,))
+					results2 = mycursor2.fetchall()
+					url_list = [x[0] for x in results2]
+					results[0]['images'] = url_list
+				return {"data": results}
+			else :
+				return JSONResponse(status_code=400, content={
+					"error": True,
+					"message": "景點編號不存在"
+					}) 
 	except Exception as e:
+		print(e)
 		return JSONResponse(status_code=500, content={
 				"error": True,
 				"message": "系統錯誤"
@@ -124,3 +142,244 @@ async def mrts(request: Request):
 				"error": True,
 				"message": "系統錯誤"
 				}) 
+
+# 登入會員資訊
+@app.get("/api/user/auth", response_class=JSONResponse)
+async def signin(request: Request, myjwt: Union[str, None] = Cookie(None)):
+	# print(myjwt)
+	# if myjwt:
+	try:
+		myjwtx = jwt.decode(myjwt,jwtkey,algorithms="HS256")
+		# print(myjwtx)
+		return {
+			"data" : {
+				"id": myjwtx["id"],
+				"name" : myjwtx["name"] ,
+				"email" : myjwtx["email"]
+			}
+		}
+
+	except jwt.ExpiredSignatureError:
+		print("expired")
+		return JSONResponse(status_code=401, content={
+			"data": None
+			}) 
+
+	except Exception as e:
+		print("other exception")
+		return JSONResponse(status_code=401, content={
+			"data": None
+			}) 
+
+
+# 登入會員
+@app.put("/api/user/auth", response_class=JSONResponse)
+async def signin(request: Request, data:dict):
+	#print (data)
+	with mysql.connector.connect(pool_name="hello") as mydb, mydb.cursor(buffered=True,dictionary=True) as mycursor :
+		query = """
+			SELECT id, name, username as email
+			FROM member 
+			WHERE username = %s AND password = %s
+			"""
+		mycursor.execute(query, (data["email"], data["password"],))
+		results = mycursor.fetchall()
+		
+
+		if results :
+			exp = datetime.now(tz=timezone.utc) + timedelta(days=7)
+			results[0].update({"exp": exp})
+			access_token = jwt.encode(results[0], jwtkey, algorithm="HS256")
+			resp = JSONResponse(status_code=200, content={
+				"token": access_token
+				})
+			resp.set_cookie(key='myjwt',value=access_token, expires=exp)
+			return resp
+		
+		else :
+			#return {"data":None}
+
+			resp = JSONResponse(status_code=401, content={
+				"data": None,
+				#"error": True,
+				#"message": "系統錯誤"
+				})
+			resp.delete_cookie("myjwt")
+			return resp 
+
+		
+
+# 註冊
+@app.post("/api/user", response_class=JSONResponse)
+async def register(request: Request, data:dict):
+	try:
+		with mysql.connector.connect(pool_name="hello") as mydb, mydb.cursor(buffered=True,dictionary=True) as mycursor :
+			query = """
+				SELECT id, name, username as email
+				FROM member 
+				WHERE username = %s
+				"""
+			mycursor.execute(query, (data["email"],))
+			results = mycursor.fetchall()
+			
+
+			if results :
+				return JSONResponse(status_code=400, content={
+					"error": True,
+					"message": "信箱重複註冊"})
+
+			else :
+				query = """
+				INSERT INTO member (name, username, password)
+				VALUES (%s, %s, %s)
+				"""
+				mycursor.execute(query, (data["name"],data["email"],data["password"],))
+				mydb.commit()
+				return {
+					"ok": True
+					}
+
+	except Exception as e:
+		return JSONResponse(status_code=500, content={
+				"error": True,
+				"message": e
+				}) 
+
+
+# 添加新行程到購物車中
+@app.post("/api/booking", response_class=JSONResponse)
+async def additem(request: Request, data:dict, myjwt: Union[str, None] = Cookie(None)):
+
+	# 解析請求的 JSON 資料
+	data = await request.json()
+
+	# 解碼 JWT
+	myjwtx = jwt.decode(myjwt,jwtkey,algorithms="HS256")
+
+	# # 建立 TABLE 到 DB
+	# with mysql.connector.connect(pool_name="hello") as mydb, mydb.cursor(buffered=True,dictionary=True) as mycursor :
+	# 	query = """
+	# 		CREATE TABLE cart (
+	# 		id BIGINT AUTO_INCREMENT PRIMARY KEY,
+	# 		username VARCHAR(255) NOT NULL,
+	# 		attractionId BIGINT NOT NULL,
+	# 		date DATE NOT NULL DEFAULT CURRENT_DATE,
+	# 		time ENUM('morning', 'afternoon') NOT NULL,
+	# 	 	count INT NOT NULL,	
+	# 		unitprice INT NOT NULL,
+	# 		created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+	# 		);
+	# 		"""
+	# 	mycursor.execute(query)
+	# 	mydb.commit()
+
+	# 將資料存到 購物車 DB
+	with mysql.connector.connect(pool_name="hello") as mydb, mydb.cursor(buffered=True,dictionary=True) as mycursor :
+		query = """
+			INSERT INTO cart (username, attractionId, date, time, price)
+			VALUES (%s, %s, %s, %s, %s)
+			"""
+		mycursor.execute(query, (myjwtx["email"], int(data["attractionId"]), data["date"], data["time"], data["price"],))
+		mydb.commit()
+		
+
+		return JSONResponse(status_code=200, content={
+				"date": data["date"], 
+				"time": data["time"], 
+				"price": data["price"]})
+
+
+
+# 購物車中的預訂行程
+@app.get("/api/booking", response_class=JSONResponse)
+async def cart_api(request: Request, myjwt: Union[str, None] = Cookie(None)):
+
+	# 解碼 JWT
+	myjwtx = jwt.decode(myjwt,jwtkey,algorithms="HS256")
+
+	# 將資料存到 購物車 DB
+	with mysql.connector.connect(pool_name="hello") as mydb, mydb.cursor(buffered=True,dictionary=True) as mycursor :
+		query = """
+			SELECT cart.id, username, attractionId, cart.date, time, price, attractions.name, attractions.address, attractions.file
+			FROM cart
+			JOIN attractions
+			ON attractions.id = cart.attractionId
+			WHERE username = %s
+			"""
+		mycursor.execute(query, (myjwtx["email"],))
+		results = mycursor.fetchall()
+		# print(results)		
+
+		if results:
+			data = []
+			for result in results:
+
+				# Split the URLs by comma
+				urls = result["file"].split(',')
+
+				# Use regex to find the first PNG or JPG URL
+				first_image_url = None
+				for url in urls:
+					match = re.search(r'https?://\S+\.(?:png|jpe?g)', url, re.IGNORECASE)
+					if match:
+						first_image_url = match.group(0)
+						break
+
+				data.append({
+					"id":result["id"],
+					"attraction": {
+						"id":int(result["attractionId"]),
+						"name":result["name"],
+						"address":result["address"],
+						"image":first_image_url} ,
+					"date": result["date"],
+					"time": result["time"],
+					"price": result["price"]
+				})
+			return {"data": data}
+		else:
+			return {"data": None}
+
+
+# 產生訂單
+@app.post("/api/order", response_class=JSONResponse)
+async def create_order(request: Request, data:dict):
+
+	data = await request.json()
+	tappay_url = "https://sandbox.tappaysdk.com/tpc/payment/pay-by-prime"
+	headers={
+		"Content-Type": "application/json",
+		"x-api-key": "app_O0KJWIEiKdyLhesRLbj8AD5qdUy01uwMtk7aNpCoK4yb24qOHaeNcwWzCFJ1"
+	}
+	response = requests.post(tappay_url, headers=headers, json=payload)
+	result = response.json()
+
+	if result['status'] == 0:
+		print(data)
+
+        # return {
+		# 	"prime": data['prime'],
+		# 	"order": {
+		# 		"price": data['amount'],
+		# 		"trip": {
+		# 		"attraction": {
+		# 			"id": 10,
+		# 			"name": "平安鐘",
+		# 			"address": "臺北市大安區忠孝東路 4 段",
+		# 			"image": "https://yourdomain.com/images/attraction/10.jpg"
+		# 		},
+		# 		"date": data['date'],
+		# 		"time": data['time']
+		# 		},
+		# 		"contact": {
+		# 		"name": "彭彭彭",
+		# 		"email": "ply@ply.com",
+		# 		"phone": "0912345678"
+		# 		}
+		# 	}
+		# 	}
+		return {"success": True, "message": "付款成功"}
+    # else:
+	# 	return {"success": False, "message": "付款失敗"}
+
+

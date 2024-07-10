@@ -4,8 +4,89 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Attraction</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <link rel="stylesheet" href="/static/att-style.css">
 </head>
 <body>
-  
+  <div class="overlay" id="overlay"></div>
+  <nav>
+    <a class="home-link" href="/">台北一日遊</a>
+    <div>
+      <a class = "a-style-1" href="/booking">預定行程</a>
+      <a id = "signin-card" class = "a-style-1" href="" onclick="card(); return false;">登入/註冊</a>
+      <a id = "signout-btn" class = "a-style-1" href="" onclick="signout()">登出</a>
+    </div>
+    <!-- pop up memu -->
+    <div class = "card">
+      <button class = "close-btn" type="button" onclick="card_close()">X</button>
+      <h1>登入會員帳號</h1>
+      <input type="text"  id = "email" class = "popup-input" placeholder="輸入電子信箱">
+      <input type="text"  id = "password" class = "popup-input" placeholder="輸入密碼">
+      <button class = "popup-btn" onclick="signin()">登入帳戶</button>
+      <h3>還沒有帳戶？點此<span class="underlink" onclick="showRegister()">註冊</span></h3>
+    </div>
+    <div class = "card" id = "cardx">
+      <button class = "close-btn" type="button" onclick="card_close()">X</button>
+      <h1>註冊會員帳號</h1>
+      <input type="text"  id = "namex" class = "popup-input" placeholder="輸入暱稱">
+      <input type="text"  id = "emailx" class = "popup-input" placeholder="輸入電子信箱">
+      <input type="text"  id = "passwordx" class = "popup-input" placeholder="輸入密碼">
+      <button class = "popup-btn" onclick="register()">註冊</button>
+      <h3 id="note"></h3>
+    </div>
+  </nav>
+  <div name="placeholder" style="height:50px;"></div>
+  <div class = "main-h-v">
+    <div class = "att-imgbox">
+      <img id = "slide-photos">
+      <a href="#" class="arrow-left"><img class="arrow-img" src="/static/images/Hovered_l.png"></a>
+      <a href="#" class="arrow-right"><img class="arrow-img" src="/static/images/Hovered_r.png"></a>
+      <div id="btn-container"></div>
+    </div>
+    <div class="att-r-box-style">
+      <p id = "att-name">景點名稱</p>
+      <p class = "text-mid">公共藝術 at <span id = "mrt-name"></span> </p>
+      <form id="bookingForm" action="POST">
+        <p class = "text-mid-b">訂購導覽行程</p>
+        <p class="text" style="margin: 10px 0;">以此景點為中心的一日行程，帶您探索城市角落故事</p>
+        <div class="form-group">
+          <label for="date">選擇日期：</label>
+          <input id ="date" name="date" type="date">
+        </div>
+        <div class="form-group">
+          <label for="ampm">選擇時間：</label>
+          <input onclick="updateFee()" id = "am" name="ampm" class="radio-btn-style" type="radio" value="morning" checked>上半天
+          <input onclick="updateFee()" id = "pm" name="ampm" class="radio-btn-style" type="radio" value="afternoon">下半天
+        </div>
+        <div class="form-group">
+          <label for="fee">導覽費用：</label>
+          <span id="fee" name="fee">新台幣2000元</span>
+        </div>
+        <button class="book-btn" type="button" onclick="additem()">開始預約行程</button>
+      </form>
+    </div>
+  </div>
+  <div class = "main-v">
+    <hr class = "hr-style">
+    <p class="desc"></p>
+    <h3>景點地址：</h3>
+    <p class="address"></p>
+    <h3>交通方式：</h3>
+    <p class="transport"></p>
+  </div>
+  <footer >
+    <div class="footer">COPYRIGHT 	&#169; 2024 台北一日遊</div>
+  </footer>
+  <script src="/static/attraction.js"></script>
+  <script src="/static/booking.js"></script>
+  <script src="/static/auth.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      checkLoginStatus()
+      att(id)
+      slidephotos()
+      // document.getElementById('date').valueAsDate = new Date()
+    })
+  </script>
 </body>
 </html>

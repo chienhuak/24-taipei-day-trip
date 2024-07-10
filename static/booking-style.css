@@ -1,0 +1,89 @@
+.cards {
+    width: 980px;
+    height: 200px;
+    border: solid pink 1px;
+    background-color: rgb(221, 239, 239, 0.3);
+    margin : 8px auto;
+}
+
+.bookingimg {
+    width: 250px;
+    height: 200px;
+}
+
+.ibox {
+    /* margin: 10px; */
+    /* border: solid rgb(128, 0, 100) 1px; */
+    width: 250px;
+    height: 200px;
+}
+
+.tbox {
+    width: 700px;
+    height: 170px;
+    padding: 15px;
+    box-sizing: border-box;
+    line-height: 15px;
+}
+
+
+nav {
+    /* position: relative; 確保 <nav> 的位置不會影響後續元素 */
+    position: fixed;
+    background-color: #f8f8f8;
+    border-bottom: 1px solid #ddd;
+    z-index: 1; /* 確保 <nav> 在其他元素之上顯示 */
+}
+
+#container {
+    width: 100%;
+    margin: 50px 0px auto; /* 增加上邊距，使其與 <nav> 保持距離 */
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+#sentence {
+    margin: 0;
+    padding: 10px 0;
+    border-bottom: 1px solid #ddd;
+    width: 100%;
+    margin : 0px auto;
+}
+
+.checkout-info {
+    width: 980px;
+    height: auto;
+    margin: auto;
+    padding: 25px;
+    box-sizing: border-box;
+    border-bottom: 1px solid #ddd;
+}
+
+#checkout {
+    width: 980px;
+    margin: auto;
+    text-align: right; /* 確保內部內容靠右 */
+}
+
+
+#checkout-btn {
+    width: 120px;
+    padding: 5px;
+    margin: 10px 0px;
+    background-color: #448899;
+    color:rgb(255, 255, 255);
+    border : solid 1px rgba(0,0,0,.125);
+    border-radius: .25em;
+}
+
+.input-style {
+    margin: 5px 0px;
+}
+
+.tpfield {
+    height: 20px;
+    width: 169.6px;
+    border: 1px solid gray;
+    margin: 3px 0;
+    padding: 0.6px;
+}

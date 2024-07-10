@@ -1,0 +1,291 @@
+.c-h {
+    display: flex;
+    /* margin: auto; */
+}
+
+
+.c-v {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+
+.att-r-box-style {
+    width: 630px;
+    /* border : solid cyan 4px; */
+    box-sizing: border-box;
+    padding: 15px;
+}
+
+
+form {
+    display: flex;
+    flex-direction: column;
+    background-color: rgb(237, 237, 237);
+    padding: 15px;
+    border-radius: 15px;
+    width: 600px;
+    box-sizing: border-box;
+}
+
+
+.form-group {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin: 5px 0;
+}
+
+
+.form-group label {
+    margin-right: 10px;
+    display: inline-block;
+    cursor: pointer;
+    font-size: 16px;
+    position: relative;
+}
+
+.radio-btn-style {
+    appearance: none; /* 移除預設樣式 */
+    width: 18px;
+    height: 18px;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    background-color: #fff;
+    cursor: pointer;
+}
+
+.radio-btn-style:checked {
+    background-color: #448899;
+}
+
+.radio-btn-style:checked::before {
+    display: block;
+    border-radius: 50%;
+    background-color: #fff;
+}
+
+
+.att-imgbox {
+    position: relative;
+    width: 540px;
+    height: 400px;
+    /* float: left; */
+    /* border: dotted orange 8px; */
+    display: inline-block;
+}
+
+
+#slide-photos {
+    width: 540px;
+    height: 400px;
+    overflow: hidden;
+    display: block;
+    /* border: solid blue 5px; */
+}
+
+
+.arrow-img {
+    width : 36px;
+    opacity: 0.2;
+}
+
+
+.arrow-img:hover {
+    opacity: 0.8;
+}
+
+
+.arrow-left  {
+    position: absolute;
+    transform: translateY(-50%);
+    top: 50%;
+    left: 10px;
+    /* transform: translateX(-50%); */
+    z-index: 998;
+}
+
+
+.arrow-right  {
+    position: absolute;
+    transform: translateY(-50%);
+    top: 50%;
+    left: 494px;
+    /* transform: translateX(-50%); */
+    z-index: 998;
+}
+
+
+.main-h-v {
+    display: flex;
+    width: 1200px;
+    height: 400px;
+    margin: 50px auto;
+    /* border: solid yellow 4px; */
+}
+
+.main-v {
+    width: 1200px;
+    height: auto;
+    margin: 50px auto;
+}
+
+
+.padding {
+    padding: 15px;
+}
+
+
+.book-btn {
+    width: 140px;
+    background-color: #448899;
+    color:rgb(255, 255, 255);
+    border : solid 1px rgba(0,0,0,.125);
+    border-radius: .25em;
+    padding: 5px;
+    margin: 10px 0px;
+}
+
+
+#att-name {
+    /* border: solid green 4px; */
+    margin: 4px;
+    font-size: 30px; 
+    font-weight: bold;
+}
+
+.text-mid {
+    margin: 15px 4px;
+}
+
+.text-mid-b {
+    margin: 5px 0;  
+    font-size: 16px; 
+    font-weight: bold;
+}
+
+
+nav {
+    position: fixed;
+    background-color: #f8f8f8;
+    border-bottom: 1px solid #ddd;
+    z-index: 999; /* 確保 <nav> 在其他元素之上顯示 */
+    height: 50px;
+}
+
+
+.hr-style {
+    border: 1px solid #ddd;
+}
+
+
+#date {
+    height: 35px;
+    width: 193px;
+    padding: 5px 10px;
+    border: none;
+    box-sizing: border-box;
+}
+
+
+
+@media (max-width: 1200px){
+
+
+.main-h-v {
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+    /* border: solid pink 5px; */
+    height: auto;
+    width: 540px;
+}
+
+.main-v {
+    flex-shrink: 1;
+    width: 500px;
+    height: auto;
+}
+
+.att-r-box-style {
+    width: 100%;
+}
+
+#bookingForm {
+    width: 100%;
+}
+
+/* .att-imgbox {
+    display: flex;
+    margin: auto;
+} */
+
+#slide-photos {
+    flex-shrink: 1;
+    /* margin: 30px 0px; */
+}
+
+}
+
+
+#btn-container {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    justify-content: center;
+    gap: 10px; /* 按鈕的間距 */
+}
+
+/* 按鈕樣式 */
+#btn-container .dot {
+    width: 12px;
+    height: 12px;
+    background-color: rgb(221, 227, 231);
+    border: rgb(255, 255, 255) 1px solid;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: 0.3s;
+    padding: 0; /* 取消padding才可以顯示為圓形 */
+}
+
+#btn-container .dot.active {
+    background-color: rgb(0, 0, 0);
+}
+
+
+
+@media (max-width: 600px) {
+
+
+.main-h-v {
+    width: 360px;
+    box-sizing: border-box;
+}    
+
+.att-imgbox {
+    width: 100%;
+    height: 350px;
+}
+
+.main-v {
+    width: 340px;
+    min-width: 340px;
+}
+
+form {
+    width: 340px;
+}
+
+#slide-photos {
+    width: 100%;
+    height: 100%;
+}
+
+.arrow-right  {
+    left: 314px;
+}
+
+}

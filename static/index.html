@@ -4,8 +4,75 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Index</title>
+  <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-  
+
+    <div class="overlay" id="overlay"></div>
+    <nav>
+      <a class="home-link" href="/">台北一日遊</a>
+      <div>
+        <a class = "a-style-1" href="/booking">預定行程</a>
+        <a id = "signin-card" class = "a-style-1" href="" onclick="card(); return false;">登入/註冊</a>
+        <a id = "signout-btn" class = "a-style-1" href="" onclick="signout()">登出</a>
+      </div>
+      <!-- pop up memu -->
+      <div class = "card">
+        <button class = "close-btn" type="button" onclick="card_close()">X</button>
+        <h1>登入會員帳號</h1>
+        <input type="text"  id = "email" class = "popup-input" placeholder="輸入電子信箱">
+        <input type="text"  id = "password" class = "popup-input" placeholder="輸入密碼">
+        <button class = "popup-btn" onclick="signin()">登入帳戶</button>
+        <h3>還沒有帳戶？點此<span class="underlink" onclick="showRegister()">註冊</span></h3>
+      </div>
+      <div class = "card" id = "cardx">
+        <button class = "close-btn" type="button" onclick="card_close()">X</button>
+        <h1>註冊會員帳號</h1>
+        <input type="text"  id = "namex" class = "popup-input" placeholder="輸入暱稱">
+        <input type="text"  id = "emailx" class = "popup-input" placeholder="輸入電子信箱">
+        <input type="text"  id = "passwordx" class = "popup-input" placeholder="輸入密碼">
+        <button class = "popup-btn" onclick="register()">註冊</button>
+        <h3 id="note"></h3>
+      </div>
+    </nav>
+    <div name="placeholder" style="height:50px;"></div>
+    
+    <div class = "container">
+      <img class="home" src="/static/images/taipei101.png" alt="taipei101.png"> 
+      <form class="searchbar" action="search">
+        <h1 style="color:white">輕鬆享受台北一日遊</h1>
+        <h2 style="color:white">探索每個角落，體驗城市的深度旅遊行程</h2>
+        <input id="search-input" type="text" placeholder="輸入景點名稱查詢"> 
+        <button class="search_btn" type="submit">
+          <img class="search_img" src="/static/images/search_icon.png" alt="">
+        </button>
+      </form>  
+    </div>
+
+    <div class="slide-bar">
+      <div>
+        <a href="#" class="arrow-left"><img class="arrow-img" src="/static/images/Hovered_l.png"></a>
+      </div>
+      <div id="container1"></div>
+      <div>
+        <a href="#" class="arrow-right"><img class="arrow-img" src="/static/images/Hovered_r.png"></a>
+      </div>
+    </div>
+
+
+    <div id = "container2"></div>
+    
+
+  <footer class="footer">COPYRIGHT 	&#169; 2024 台北一日遊</footer>
+  <!-- <script src="{{url_for('static',path='/attractions.js')}}"></script>  -->
+  <script src="/static/attractions.js"></script>
+  <script src="/static/auth.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function(){
+        mrts()
+        photos(0)
+        checkLoginStatus()
+    })    
+  </script>
 </body>
 </html>

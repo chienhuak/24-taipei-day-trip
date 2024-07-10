@@ -4,8 +4,78 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Booking</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <link rel="stylesheet" href="/static/att-style.css">
+  <link rel="stylesheet" href="/static/booking-style.css">
 </head>
 <body>
-  
+  <div class="overlay" id="overlay"></div>
+  <nav>
+    <a class="home-link" href="/">台北一日遊</a>
+    <div>
+      <a class = "a-style-1" href="/booking">預定行程</a>
+      <a id = "signin-card" class = "a-style-1" href="" onclick="card(); return false;">登入/註冊</a>   <!-- return false 不跳頁至 a tag href -->
+      <a id = "signout-btn" class = "a-style-1" href="/" onclick="signout()">登出</a>
+    </div>
+    <!-- pop up memu -->
+    <div class = "card">
+      <button class = "close-btn" type="button" onclick="card_close()">X</button>
+      <h1>登入會員帳號</h1>
+      <input type="text"  id = "email" class = "popup-input" placeholder="輸入電子信箱">
+      <input type="text"  id = "password" class = "popup-input" placeholder="輸入密碼">
+      <button class = "popup-btn" onclick="signin()">登入帳戶</button>
+      <h3>還沒有帳戶？點此<span class="underlink" onclick="showRegister()">註冊</span></h3>
+    </div>
+    <div class = "card" id = "cardx">
+      <button class = "close-btn" type="button" onclick="card_close()">X</button>
+      <h1>註冊會員帳號</h1>
+      <input type="text"  id = "namex" class = "popup-input" placeholder="輸入暱稱">
+      <input type="text"  id = "emailx" class = "popup-input" placeholder="輸入電子信箱">
+      <input type="text"  id = "passwordx" class = "popup-input" placeholder="輸入密碼">
+      <button class = "popup-btn" onclick="register()">註冊</button>
+      <h3 id="note"></h3>
+    </div>
+  </nav>
+  <div name="placeholder" style="height:10px;"></div>
+
+
+  <div id="container">
+      <h3 id="sentence">您好，<span></span>，待預定的行程如下：</h3>
+  </div>
+
+  <div class="checkout-info c-v">
+    <h3>您的聯絡資訊</h3>
+    <label for="" class="input-style">聯絡姓名：<input type="text" id="order-name"></label>
+    <label for="" class="input-style">聯絡信箱：<input type="text" id="order-email"></label>
+    <label for="" class="input-style">手機號碼：<input type="text" id="order-phone"></label>
+    <p class="p-bolb">請保持手機暢通，準時到達，導覽人員將用手機與您聯繫，務必留下正確的聯絡方式。</p>
+  </div>
+
+  <div class="checkout-info c-v">
+    <h3>信用卡付款資訊</h3>
+    <div class="form-group"> 卡片號碼：<div class="tpfield" id="card-number"></div></div>
+    <div class="form-group"> 過期時間：<div class="tpfield" id="card-expiration-date"></div></div>
+    <div class="form-group"> 驗證密碼：<div class="tpfield" id="card-ccv"></div></div>
+    <!-- <label for="" class="input-style" >卡片號碼：<input id="card-number"></label>
+    <label for="" class="input-style" >過期時間：<input id="card-expiration-date"></label>
+    <label for="" class="input-style" >驗證密碼：<input id="card-ccv"></label> -->
+  </div>
+
+  <div id="checkout">
+    <p>總價: 新台幣 <span id="amount"></span> 元</p>
+    <button id="checkout-btn" onclick="onSubmit()">確認訂購並付款</button>
+  </div>
+  <footer class="footer">COPYRIGHT 	&#169; 2024 台北一日遊</footer>
+
+  <script src="/static/booking.js"></script>
+  <script src="/static/auth.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function(){
+      checkLoginStatus()
+      cartlist()
+    })
+  </script>
+  <script src="https://js.tappaysdk.com/sdk/tpdirect/v5.14.0"></script>
+  <script src="/static/tappay.js"></script>
 </body>
 </html>
