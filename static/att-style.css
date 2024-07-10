@@ -179,6 +179,17 @@ nav {
     border: 1px solid #ddd;
 }
 
+
+#date {
+    height: 35px;
+    width: 193px;
+    padding: 5px 10px;
+    border: none;
+    box-sizing: border-box;
+}
+
+
+
 @media (max-width: 1200px){
 
 
