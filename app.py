@@ -145,31 +145,35 @@ async def mrts(request: Request):
 
 # 登入會員資訊
 @app.get("/api/user/auth", response_class=JSONResponse)
-async def signin(request: Request, myjwt: Union[str, None] = Cookie(None)):
-	# print(myjwt)
-	# if myjwt:
-	try:
-		myjwtx = jwt.decode(myjwt,jwtkey,algorithms="HS256")
-		# print(myjwtx)
-		return {
-			"data" : {
-				"id": myjwtx["id"],
-				"name" : myjwtx["name"] ,
-				"email" : myjwtx["email"]
+async def signin(request: Request):
+
+	# 從 Authorization Header 中提取 token
+	auth_header = request.headers.get('Authorization')
+	if auth_header:
+		myjwt = auth_header.split(" ")[1] 
+		try:
+			myjwtx = jwt.decode(myjwt,jwtkey,algorithms="HS256")
+			# print(myjwtx)
+			return {
+				"data" : {
+					"id": myjwtx["id"],
+					"name" : myjwtx["name"] ,
+					"email" : myjwtx["email"]
+				}
 			}
-		}
 
-	except jwt.ExpiredSignatureError:
-		print("expired")
-		return JSONResponse(status_code=401, content={
-			"data": None
-			}) 
+		except jwt.ExpiredSignatureError:
+			print("expired")
+			return JSONResponse(status_code=401, content={
+				"data": None
+				}) 
 
-	except Exception as e:
-		print("other exception")
-		return JSONResponse(status_code=401, content={
-			"data": None
-			}) 
+		except Exception as e:
+			print("other exception")
+			return JSONResponse(status_code=401, content={
+				"data": None
+				}) 
+
 
 
 # 登入會員
@@ -193,7 +197,7 @@ async def signin(request: Request, data:dict):
 			resp = JSONResponse(status_code=200, content={
 				"token": access_token
 				})
-			resp.set_cookie(key='myjwt',value=access_token, expires=exp)
+			# resp.set_cookie(key='myjwt',value=access_token, expires=exp)
 			return resp
 		
 		else :
@@ -204,7 +208,7 @@ async def signin(request: Request, data:dict):
 				#"error": True,
 				#"message": "系統錯誤"
 				})
-			resp.delete_cookie("myjwt")
+			# resp.delete_cookie("myjwt")
 			return resp 
 
 		
@@ -292,53 +296,58 @@ async def additem(request: Request, data:dict, myjwt: Union[str, None] = Cookie(
 
 # 購物車中的預訂行程
 @app.get("/api/booking", response_class=JSONResponse)
-async def cart_api(request: Request, myjwt: Union[str, None] = Cookie(None)):
+async def cart_api(request: Request):
 
-	# 解碼 JWT
-	myjwtx = jwt.decode(myjwt,jwtkey,algorithms="HS256")
+	# 從 Authorization Header 中提取 token
+	auth_header = request.headers.get('Authorization')
+	if auth_header:
+		myjwt = auth_header.split(" ")[1] 
 
-	# 將資料存到 購物車 DB
-	with mysql.connector.connect(pool_name="hello") as mydb, mydb.cursor(buffered=True,dictionary=True) as mycursor :
-		query = """
-			SELECT cart.id, username, attractionId, cart.date, time, price, attractions.name, attractions.address, attractions.file
-			FROM cart
-			JOIN attractions
-			ON attractions.id = cart.attractionId
-			WHERE username = %s
-			"""
-		mycursor.execute(query, (myjwtx["email"],))
-		results = mycursor.fetchall()
-		# print(results)		
+		# 解碼 JWT
+		myjwtx = jwt.decode(myjwt,jwtkey,algorithms="HS256")
 
-		if results:
-			data = []
-			for result in results:
+		# 購物車 DB
+		with mysql.connector.connect(pool_name="hello") as mydb, mydb.cursor(buffered=True,dictionary=True) as mycursor :
+			query = """
+				SELECT cart.id, username, attractionId, cart.date, time, price, attractions.name, attractions.address, attractions.file
+				FROM cart
+				JOIN attractions
+				ON attractions.id = cart.attractionId
+				WHERE username = %s
+				"""
+			mycursor.execute(query, (myjwtx["email"],))
+			results = mycursor.fetchall()
+			# print(results)		
 
-				# Split the URLs by comma
-				urls = result["file"].split(',')
+			if results:
+				data = []
+				for result in results:
 
-				# Use regex to find the first PNG or JPG URL
-				first_image_url = None
-				for url in urls:
-					match = re.search(r'https?://\S+\.(?:png|jpe?g)', url, re.IGNORECASE)
-					if match:
-						first_image_url = match.group(0)
-						break
+					# Split the URLs by comma
+					urls = result["file"].split(',')
 
-				data.append({
-					"id":result["id"],
-					"attraction": {
-						"id":int(result["attractionId"]),
-						"name":result["name"],
-						"address":result["address"],
-						"image":first_image_url} ,
-					"date": result["date"],
-					"time": result["time"],
-					"price": result["price"]
-				})
-			return {"data": data}
-		else:
-			return {"data": None}
+					# Use regex to find the first PNG or JPG URL
+					first_image_url = None
+					for url in urls:
+						match = re.search(r'https?://\S+\.(?:png|jpe?g)', url, re.IGNORECASE)
+						if match:
+							first_image_url = match.group(0)
+							break
+
+					data.append({
+						"id":result["id"],
+						"attraction": {
+							"id":int(result["attractionId"]),
+							"name":result["name"],
+							"address":result["address"],
+							"image":first_image_url} ,
+						"date": result["date"],
+						"time": result["time"],
+						"price": result["price"]
+					})
+				return {"data": data}
+			else:
+				return {"data": None}
 
 
 # 產生訂單
@@ -360,7 +369,7 @@ async def create_order(request: Request, data:dict):
         # return {
 		# 	"prime": data['prime'],
 		# 	"order": {
-		# 		"price": data['amount'],
+		# 		"price": data['price'],
 		# 		"trip": {
 		# 		"attraction": {
 		# 			"id": 10,

@@ -74,6 +74,10 @@ async function signin() {
         const result = await response.json();
         // console.log(result.token);
         if(result.token) {
+
+            // 將 JWT 存儲在 localStorage 中
+            localStorage.setItem('token', result.token)
+
             signinBtn.style.display = "none";
             signoutBtn.style.display = "inline-block";
             // alert('登入成功');
@@ -158,8 +162,12 @@ function signout() {
     const signoutBtn = document.getElementById('signout-btn')
     const signinBtn = document.getElementById('signin-card')
 
-    // 清除 cookie 中的 myjwt
-    document.cookie = "myjwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;"
+    // // 清除 cookie 中的 myjwt
+    // document.cookie = "myjwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;"
+
+    // 清除 localstorage 的 token
+    localStorage.removeItem('token')
+
     signoutBtn.style.display = "none"
     signinBtn.style.display = "inline-block"
 
@@ -174,10 +182,21 @@ async function checkLoginStatus() {
     console.log('checkLoginStatus running..')
     const signoutBtn = document.getElementById('signout-btn')
     const signinBtn = document.getElementById('signin-card')
+
+    // const response = await fetch('/api/user/auth', {
+    //     method: 'GET',
+    //     credentials: 'include'
+    // });
+
+
+    // 從 localStorage 獲取 JWT
+    const token = localStorage.getItem('token')
+    
+    // 將 JWT 作為 Bearer Token 放在 Authorization Header 中
     const response = await fetch('/api/user/auth', {
         method: 'GET',
-        credentials: 'include'
-    });
+        headers: {'Authorization': `Bearer ${token}`}
+    })
 
     if (response.ok) {
         console.log('checkLoginStatus signin..')
