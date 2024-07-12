@@ -9,12 +9,15 @@ import os
 from fastapi.staticfiles import StaticFiles
 import jwt
 import re
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+import requests
 
 app=FastAPI(debug=True)
 jwtkey = "iweorhfnen834"
 
 # 從環境變數中讀取 MySQL 密碼
 mysql_password = os.environ.get("MYSQL_PASSWORD")
+tappay_partner_key = os.environ.get("TAPPAY")
 # 連接到 MySQL 資料庫
 with mysql.connector.connect(
     host="localhost",
@@ -26,6 +29,28 @@ with mysql.connector.connect(
 
 # 設定靜態檔案路徑
 app.mount("/static", StaticFiles(directory="static"), name="static")
+
+# 創建一個 HTTPBearer 的實例
+security = HTTPBearer()
+
+# To get JWT token and decode JWT token
+async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    try:
+        token = credentials.credentials
+        payload = jwt.decode(token, jwtkey, algorithms=["HS256"])
+        return payload
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Signature has expired",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    except jwt.InvalidTokenError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid token",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
 
 # Static Pages (Never Modify Code in this Block)
 @app.get("/", include_in_schema=False)
@@ -337,44 +362,77 @@ async def cart_api(request: Request):
 
 
 # 產生訂單
-@app.post("/api/order", response_class=JSONResponse)
+@app.post("/api/orders", response_class=JSONResponse)
 async def create_order(request: Request, data:dict):
 
-	data = await request.json()
-	tappay_url = "https://sandbox.tappaysdk.com/tpc/payment/pay-by-prime"
-	headers={
-		"Content-Type": "application/json",
-		"x-api-key": "app_O0KJWIEiKdyLhesRLbj8AD5qdUy01uwMtk7aNpCoK4yb24qOHaeNcwWzCFJ1"
-	}
-	response = requests.post(tappay_url, headers=headers, json=payload)
-	result = response.json()
+	# 從 Authorization Header 中提取 token
+	auth_header = request.headers.get('Authorization')
+	if auth_header:
+		myjwt = auth_header.split(" ")[1] 
 
-	if result['status'] == 0:
-		print(data)
+		# 解碼 JWT
+		myjwtx = jwt.decode(myjwt,jwtkey,algorithms="HS256")
 
-        # return {
-		# 	"prime": data['prime'],
-		# 	"order": {
-		# 		"price": data['price'],
-		# 		"trip": {
-		# 		"attraction": {
-		# 			"id": 10,
-		# 			"name": "平安鐘",
-		# 			"address": "臺北市大安區忠孝東路 4 段",
-		# 			"image": "https://yourdomain.com/images/attraction/10.jpg"
-		# 		},
-		# 		"date": data['date'],
-		# 		"time": data['time']
-		# 		},
-		# 		"contact": {
-		# 		"name": "彭彭彭",
-		# 		"email": "ply@ply.com",
-		# 		"phone": "0912345678"
-		# 		}
-		# 	}
-		# 	}
-		return {"success": True, "message": "付款成功"}
-    # else:
-	# 	return {"success": False, "message": "付款失敗"}
+
+		# print(data)
+		# data['trips'] --> {'12': True, '13': True, '14': True}
+		print(data['trips'])
+		trips = [key for key, value in data['trips'].items() if value]
+		print(trips)
+
+		# 查找 DB 資料
+		with mysql.connector.connect(pool_name="hello") as mydb, mydb.cursor(buffered=True,dictionary=True) as mycursor :
+			query = f"""
+				SELECT cart.id, attractionId, attractions.name, attractions.address
+				FROM cart
+				JOIN attractions
+				ON attractions.id = cart.attractionId
+				WHERE username = %s AND cart.id in ({','.join(['%s'] * len(trips))})
+				"""
+			mycursor.execute(query, (myjwtx["email"],*trips))
+			items = mycursor.fetchall()
+
+
+			for item in items:
+				item['image'] = data['trips'][str(item['id'])]
+				del item['id']
+			# print(items)
+
+			query2 = """
+				INSERT INTO orders (username, amount, name, email, phone, detail)
+				VALUES (%s, %s, %s, %s, %s, %s)
+				"""
+			mycursor.execute(query2, (myjwtx["email"], data['price'], data['name'], data["email"], data["phone"], json.dumps(items)))
+			mydb.commit()
+
+
+			# 傳資料給 Tappay
+			payload = {
+				"prime": data['prime'],
+				"partner_key": tappay_partner_key,
+				"merchant_id": "christyhelp24_CTBC_Union_Pay",
+				"amount": data['price'],
+				"currency": "TWD",
+				"details": json.dumps({"trip":"trip"}),  # 發送訂單的詳細信息
+				"cardholder": {
+					"phone_number": data['phone'],
+					"name": data['name'],
+					"email": data['email'] 
+				}
+			}
+
+			tappay_url = "https://sandbox.tappaysdk.com/tpc/payment/pay-by-prime"
+			headers={
+				"Content-Type": "application/json",
+				"x-api-key": tappay_partner_key
+			}
+			Tappay_response = requests.post(tappay_url, headers=headers, json=payload)
+			Tappay_return_data = Tappay_response.json()
+
+			if Tappay_return_data['status'] == 0:
+				print('付款成功')
+			else : 
+				print('付款失敗')
+				print(Tappay_return_data)
 
 

@@ -34,7 +34,7 @@ async function additem() {
 //     cartlist()
 // })
 
-let order_trips = []
+window.order_trips = {}
 
 // 購物車中所有待確認行程 render 到畫面中
 function cartlist() {
@@ -67,20 +67,21 @@ function cartlist() {
             const pick = document.createElement('input')
             pick.type = 'checkbox'
             pick.dataset.price = data.data[i].price; // 將價格儲存在 checkbox dataset 中
-            pick.dataset.cartId = data.data[i].id;
+            pick.dataset.cartId = data.data[i].id; // 將購物項目儲存在 checkbox dataset 中
+            pick.dataset.imgsrc = data.data[i].attraction.image
 
             // 幫 checkbox 增加 eventlistener 計算總金額
             pick.addEventListener('change', (event) => {
-                const cartId = event.target.dataset.id
+                const cartId = event.target.dataset.cartId
                 if (event.target.checked) {
                     totalAmount += parseInt(event.target.dataset.price)
-                    order_trips[cartId] = true
+                    window.order_trips[cartId] = event.target.dataset.imgsrc
                 } else {
                     totalAmount -= parseInt(event.target.dataset.price)
-                    order_trips[cartId] = false
+                    window.order_trips[cartId] = null
                 }
                 updateTotalAmount()
-                console.log(order_trips)
+                console.log(window.order_trips)
             })
 
             const ibox = document.createElement('div')
