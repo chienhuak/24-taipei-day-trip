@@ -59,7 +59,7 @@ function cartlist() {
     .then(response => response.json())
     .then(data => {
         for (let i = 0; i < data.data.length; i++) {
-            console.log(data.data[i])
+            // console.log(data.data[i])
 
             const cards_div = document.createElement('div')
             cards_div.className = 'cards c-h'
@@ -83,6 +83,16 @@ function cartlist() {
                 updateTotalAmount()
                 console.log(window.order_trips)
             })
+
+            const trashdiv = document.createElement('div')
+            trashdiv.addEventListener('click', deleteitem)
+            trashdiv.className = 'trash-div'
+
+            const trashicon = document.createElement('img')
+            trashicon.className = 'trash-icon'
+            trashicon.src = '/static/images/trash_icon.png'
+            trashicon.dataset.cartId = data.data[i].id; // 將購物項目儲存在 trashicon dataset 中
+            trashdiv.appendChild(trashicon)
 
             const ibox = document.createElement('div')
             ibox.className = 'ibox'
@@ -113,6 +123,7 @@ function cartlist() {
             cards_div.appendChild(pick)
             cards_div.appendChild(ibox)
             cards_div.appendChild(tbox)
+            cards_div.appendChild(trashdiv)
             tbox.appendChild(name_p)
             tbox.appendChild(date_p)
             tbox.appendChild(time_p)
@@ -133,3 +144,31 @@ function cartlist() {
 
 
 // 刪除購物中待確認的預定行程 (已確認 OR 移除)
+function deleteitem(event) {
+
+    // 從 localStorage 獲取 JWT
+    const token = localStorage.getItem('token')
+    const cartId = event.target.dataset.cartId
+
+
+    fetch('/api/booking',{
+        method: 'DELETE',
+        headers: {
+            'Authorization': `Bearer ${token}`, // 將 JWT 放在 Authorization Header 中
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            "cartId": cartId
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log(data)
+        // cartlist()
+        const cardToRemove = event.target.closest('.cards')
+        if (cardToRemove) {
+            cardToRemove.remove()
+        }
+    })
+
+}
