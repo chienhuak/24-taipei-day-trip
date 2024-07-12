@@ -46,7 +46,7 @@
 
 
   <div id="container">
-      <h3 id="sentence">您好，<span></span>，待預定的行程如下：</h3>
+      <h3 id="sentence">您好，<span id="booking_user"></span>，待預定的行程如下：</h3>
   </div>
 
   <div class="checkout-info c-v">
@@ -78,6 +78,7 @@
   <script>
     document.addEventListener('DOMContentLoaded', function(){
       checkLoginStatus()
+      renderName()
       cartlist()
       deleteitem()
     })
