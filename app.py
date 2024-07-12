@@ -9,12 +9,15 @@ import os
 from fastapi.staticfiles import StaticFiles
 import jwt
 import re
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+import requests
 
 app=FastAPI(debug=True)
 jwtkey = "iweorhfnen834"
 
 # 從環境變數中讀取 MySQL 密碼
 mysql_password = os.environ.get("MYSQL_PASSWORD")
+tappay_partner_key = os.environ.get("TAPPAY")
 # 連接到 MySQL 資料庫
 with mysql.connector.connect(
     host="localhost",
@@ -26,6 +29,28 @@ with mysql.connector.connect(
 
 # 設定靜態檔案路徑
 app.mount("/static", StaticFiles(directory="static"), name="static")
+
+# 創建一個 HTTPBearer 的實例
+security = HTTPBearer()
+
+# To get JWT token and decode JWT token
+async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    try:
+        token = credentials.credentials
+        payload = jwt.decode(token, jwtkey, algorithms=["HS256"])
+        return payload
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Signature has expired",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    except jwt.InvalidTokenError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid token",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
 
 # Static Pages (Never Modify Code in this Block)
 @app.get("/", include_in_schema=False)
@@ -145,31 +170,35 @@ async def mrts(request: Request):
 
 # 登入會員資訊
 @app.get("/api/user/auth", response_class=JSONResponse)
-async def signin(request: Request, myjwt: Union[str, None] = Cookie(None)):
-	# print(myjwt)
-	# if myjwt:
-	try:
-		myjwtx = jwt.decode(myjwt,jwtkey,algorithms="HS256")
-		# print(myjwtx)
-		return {
-			"data" : {
-				"id": myjwtx["id"],
-				"name" : myjwtx["name"] ,
-				"email" : myjwtx["email"]
+async def signin(request: Request):
+
+	# 從 Authorization Header 中提取 token
+	auth_header = request.headers.get('Authorization')
+	if auth_header:
+		myjwt = auth_header.split(" ")[1] 
+		try:
+			myjwtx = jwt.decode(myjwt,jwtkey,algorithms="HS256")
+			# print(myjwtx)
+			return {
+				"data" : {
+					"id": myjwtx["id"],
+					"name" : myjwtx["name"] ,
+					"email" : myjwtx["email"]
+				}
 			}
-		}
 
-	except jwt.ExpiredSignatureError:
-		print("expired")
-		return JSONResponse(status_code=401, content={
-			"data": None
-			}) 
+		except jwt.ExpiredSignatureError:
+			print("expired")
+			return JSONResponse(status_code=401, content={
+				"data": None
+				}) 
 
-	except Exception as e:
-		print("other exception")
-		return JSONResponse(status_code=401, content={
-			"data": None
-			}) 
+		except Exception as e:
+			print("other exception")
+			return JSONResponse(status_code=401, content={
+				"data": None
+				}) 
+
 
 
 # 登入會員
@@ -193,7 +222,7 @@ async def signin(request: Request, data:dict):
 			resp = JSONResponse(status_code=200, content={
 				"token": access_token
 				})
-			resp.set_cookie(key='myjwt',value=access_token, expires=exp)
+			# resp.set_cookie(key='myjwt',value=access_token, expires=exp)
 			return resp
 		
 		else :
@@ -204,7 +233,7 @@ async def signin(request: Request, data:dict):
 				#"error": True,
 				#"message": "系統錯誤"
 				})
-			resp.delete_cookie("myjwt")
+			# resp.delete_cookie("myjwt")
 			return resp 
 
 		
@@ -248,138 +277,243 @@ async def register(request: Request, data:dict):
 
 # 添加新行程到購物車中
 @app.post("/api/booking", response_class=JSONResponse)
-async def additem(request: Request, data:dict, myjwt: Union[str, None] = Cookie(None)):
+async def additem(request: Request, data:dict):
 
-	# 解析請求的 JSON 資料
-	data = await request.json()
+	# 從 Authorization Header 中提取 token
+	auth_header = request.headers.get('Authorization')
+	if auth_header:
+		myjwt = auth_header.split(" ")[1] 
 
-	# 解碼 JWT
-	myjwtx = jwt.decode(myjwt,jwtkey,algorithms="HS256")
+		# 解碼 JWT
+		myjwtx = jwt.decode(myjwt,jwtkey,algorithms="HS256")
 
-	# # 建立 TABLE 到 DB
-	# with mysql.connector.connect(pool_name="hello") as mydb, mydb.cursor(buffered=True,dictionary=True) as mycursor :
-	# 	query = """
-	# 		CREATE TABLE cart (
-	# 		id BIGINT AUTO_INCREMENT PRIMARY KEY,
-	# 		username VARCHAR(255) NOT NULL,
-	# 		attractionId BIGINT NOT NULL,
-	# 		date DATE NOT NULL DEFAULT CURRENT_DATE,
-	# 		time ENUM('morning', 'afternoon') NOT NULL,
-	# 	 	count INT NOT NULL,	
-	# 		unitprice INT NOT NULL,
-	# 		created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-	# 		);
-	# 		"""
-	# 	mycursor.execute(query)
-	# 	mydb.commit()
+		# 解析請求的 JSON 資料
+		data = await request.json()
 
-	# 將資料存到 購物車 DB
-	with mysql.connector.connect(pool_name="hello") as mydb, mydb.cursor(buffered=True,dictionary=True) as mycursor :
-		query = """
-			INSERT INTO cart (username, attractionId, date, time, price)
-			VALUES (%s, %s, %s, %s, %s)
-			"""
-		mycursor.execute(query, (myjwtx["email"], int(data["attractionId"]), data["date"], data["time"], data["price"],))
-		mydb.commit()
-		
-
-		return JSONResponse(status_code=200, content={
-				"date": data["date"], 
-				"time": data["time"], 
-				"price": data["price"]})
-
+		# 將資料存到 購物車 DB
+		with mysql.connector.connect(pool_name="hello") as mydb, mydb.cursor(buffered=True,dictionary=True) as mycursor :
+			query = """
+				INSERT INTO cart (username, attractionId, date, time, price)
+				VALUES (%s, %s, %s, %s, %s)
+				"""
+			mycursor.execute(query, (myjwtx["email"], int(data["attractionId"]), data["date"], data["time"], data["price"],))
+			mydb.commit()
+			
+			return JSONResponse(status_code=200, content={
+					"date": data["date"], 
+					"time": data["time"], 
+					"price": data["price"]})
 
 
 # 購物車中的預訂行程
 @app.get("/api/booking", response_class=JSONResponse)
-async def cart_api(request: Request, myjwt: Union[str, None] = Cookie(None)):
+async def cart_api(request: Request):
 
-	# 解碼 JWT
-	myjwtx = jwt.decode(myjwt,jwtkey,algorithms="HS256")
+	# 從 Authorization Header 中提取 token
+	auth_header = request.headers.get('Authorization')
+	if auth_header:
+		myjwt = auth_header.split(" ")[1] 
 
-	# 將資料存到 購物車 DB
-	with mysql.connector.connect(pool_name="hello") as mydb, mydb.cursor(buffered=True,dictionary=True) as mycursor :
-		query = """
-			SELECT cart.id, username, attractionId, cart.date, time, price, attractions.name, attractions.address, attractions.file
-			FROM cart
-			JOIN attractions
-			ON attractions.id = cart.attractionId
-			WHERE username = %s
-			"""
-		mycursor.execute(query, (myjwtx["email"],))
-		results = mycursor.fetchall()
-		# print(results)		
+		# 解碼 JWT
+		myjwtx = jwt.decode(myjwt,jwtkey,algorithms="HS256")
 
-		if results:
-			data = []
-			for result in results:
+		# 購物車 DB
+		with mysql.connector.connect(pool_name="hello") as mydb, mydb.cursor(buffered=True,dictionary=True) as mycursor :
+			query = """
+				SELECT cart.id, username, attractionId, cart.date, time, price, attractions.name, attractions.address, attractions.file
+				FROM cart
+				JOIN attractions
+				ON attractions.id = cart.attractionId
+				WHERE username = %s
+				"""
+			mycursor.execute(query, (myjwtx["email"],))
+			results = mycursor.fetchall()
+			# print(results)		
 
-				# Split the URLs by comma
-				urls = result["file"].split(',')
+			if results:
+				data = []
+				for result in results:
 
-				# Use regex to find the first PNG or JPG URL
-				first_image_url = None
-				for url in urls:
-					match = re.search(r'https?://\S+\.(?:png|jpe?g)', url, re.IGNORECASE)
-					if match:
-						first_image_url = match.group(0)
-						break
+					# Split the URLs by comma
+					urls = result["file"].split(',')
 
-				data.append({
-					"id":result["id"],
-					"attraction": {
-						"id":int(result["attractionId"]),
-						"name":result["name"],
-						"address":result["address"],
-						"image":first_image_url} ,
-					"date": result["date"],
-					"time": result["time"],
-					"price": result["price"]
-				})
-			return {"data": data}
-		else:
-			return {"data": None}
+					# Use regex to find the first PNG or JPG URL
+					first_image_url = None
+					for url in urls:
+						match = re.search(r'https?://\S+\.(?:png|jpe?g)', url, re.IGNORECASE)
+						if match:
+							first_image_url = match.group(0)
+							break
+
+					data.append({
+						"id":result["id"],
+						"attraction": {
+							"id":int(result["attractionId"]),
+							"name":result["name"],
+							"address":result["address"],
+							"image":first_image_url} ,
+						"date": result["date"],
+						"time": result["time"],
+						"price": result["price"]
+					})
+				return {"data": data}
+			else:
+				return {"data": None}
 
 
 # 產生訂單
-@app.post("/api/order", response_class=JSONResponse)
+@app.post("/api/orders", response_class=JSONResponse)
 async def create_order(request: Request, data:dict):
 
-	data = await request.json()
-	tappay_url = "https://sandbox.tappaysdk.com/tpc/payment/pay-by-prime"
-	headers={
-		"Content-Type": "application/json",
-		"x-api-key": "app_O0KJWIEiKdyLhesRLbj8AD5qdUy01uwMtk7aNpCoK4yb24qOHaeNcwWzCFJ1"
-	}
-	response = requests.post(tappay_url, headers=headers, json=payload)
-	result = response.json()
+	# 從 Authorization Header 中提取 token
+	auth_header = request.headers.get('Authorization')
+	if not auth_header:
+		return JSONResponse(status_code=403, content={
+			"error": true,
+			"message": "未登入系統，拒絕存取"
+			})
 
-	if result['status'] == 0:
-		print(data)
+	else :
+		myjwt = auth_header.split(" ")[1] 
 
-        # return {
-		# 	"prime": data['prime'],
-		# 	"order": {
-		# 		"price": data['amount'],
-		# 		"trip": {
-		# 		"attraction": {
-		# 			"id": 10,
-		# 			"name": "平安鐘",
-		# 			"address": "臺北市大安區忠孝東路 4 段",
-		# 			"image": "https://yourdomain.com/images/attraction/10.jpg"
-		# 		},
-		# 		"date": data['date'],
-		# 		"time": data['time']
-		# 		},
-		# 		"contact": {
-		# 		"name": "彭彭彭",
-		# 		"email": "ply@ply.com",
-		# 		"phone": "0912345678"
-		# 		}
-		# 	}
-		# 	}
-		return {"success": True, "message": "付款成功"}
-    # else:
-	# 	return {"success": False, "message": "付款失敗"}
+		# 解碼 JWT
+		myjwtx = jwt.decode(myjwt,jwtkey,algorithms="HS256")
+
+		# print(data)
+		# data['trips'] --> {'12': True, '13': True, '14': True}
+		print(data['trips'])
+		trips = [key for key, value in data['trips'].items() if value]
+		print(trips)
+
+		# 查找 DB 資料
+		with mysql.connector.connect(pool_name="hello") as mydb, mydb.cursor(buffered=True,dictionary=True) as mycursor :
+			query = f"""
+				SELECT cart.id, attractionId, attractions.name, attractions.address, cart.date, cart.time
+				FROM cart
+				JOIN attractions
+				ON attractions.id = cart.attractionId
+				WHERE username = %s AND cart.id in ({','.join(['%s'] * len(trips))})
+				"""
+			mycursor.execute(query, (myjwtx["email"],*trips))
+			items = mycursor.fetchall()
+
+
+			for item in items:
+				item['image'] = data['trips'][str(item['id'])]
+				item['date'] = item['date'].isoformat()
+				del item['id']
+			# print(items)
+
+			query2 = """
+				INSERT INTO orders (username, amount, name, email, phone, detail)
+				VALUES (%s, %s, %s, %s, %s, %s)
+				"""
+			mycursor.execute(query2, (myjwtx["email"], data['price'], data['name'], data["email"], data["phone"], json.dumps(items)))
+			
+			# 獲取 MySQL 最新一筆自動產生的 orderID
+			orderID = mycursor.lastrowid
+			# print("Inserted orderID:", orderID)
+
+			mydb.commit()
+
+
+
+			# 傳資料給 Tappay
+			payload = {
+				"prime": data['prime'],
+				"partner_key": tappay_partner_key,
+				"merchant_id": "christyhelp24_CTBC_Union_Pay",
+				"amount": data['price'],
+				"currency": "TWD",
+				"details": json.dumps({"trip":"trip"}),  # 發送訂單的詳細信息
+				"cardholder": {
+					"phone_number": data['phone'],
+					"name": data['name'],
+					"email": data['email'] 
+				}
+			}
+
+			tappay_url = "https://sandbox.tappaysdk.com/tpc/payment/pay-by-prime"
+			headers={
+				"Content-Type": "application/json",
+				"x-api-key": tappay_partner_key
+			}
+			Tappay_response = requests.post(tappay_url, headers=headers, json=payload)
+			Tappay_return_data = Tappay_response.json()
+			print(Tappay_return_data)
+
+			if Tappay_return_data['status'] == 0:
+
+				print('付款成功')
+
+				query3 = """
+				INSERT INTO payments (orderid, amount, result)
+				VALUES (%s, %s, 'success')
+				"""
+				mycursor.execute(query3, (orderID, Tappay_return_data['amount']))
+
+				query4 = """
+				UPDATE orders SET status = 'paid'
+				WHERE orderid = %s
+				"""
+				mycursor.execute(query4, (orderID,))
+
+				mydb.commit()
+
+				return {
+					"data": {
+						"number": orderID,
+						"payment": {
+						"status": 0,
+						"message": "付款成功"
+						}
+					}
+					}
+
+
+			else : 
+
+				print('付款失敗')
+
+				query3 = """
+				INSERT INTO payments (orderid, amount, result)
+				VALUES (%s, %s, 'success')
+				"""
+				mycursor.execute(query3, (orderID, Tappay_return_data['amount']))
+				mydb.commit()
+
+				return JSONResponse(status_code=400, content={
+				"error": true,
+				"message": Tappay_return_data['msg'],
+				"number": orderID,
+				})
+
+
+@app.get("/api/order/{orderID}", response_class=JSONResponse)
+async def attractions(request: Request, orderID:int):
+	with mysql.connector.connect(pool_name="hello") as mydb, mydb.cursor(buffered=True,dictionary=True) as mycursor :
+		
+		query = """
+		SELECT orderid, amount, detail, name, email, phone, status
+		FROM orders
+		WHERE orderid = %s 
+		"""
+		mycursor.execute(query, (orderID,))
+		results = mycursor.fetchall()
+
+		if results :
+			return {
+				"data": {
+					"number": results[0]['orderid'],
+					"price": results[0]['amount'],
+					"trip": json.loads(results[0]['detail']),
+					"contact": {
+					"name": results[0]['name'],
+					"email": results[0]['email'],
+					"phone": results[0]['phone'],
+					},
+					"status": results[0]['status']
+				}
+				}
 
 

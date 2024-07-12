@@ -1,6 +1,9 @@
 // 添加新行程到購物車中
 async function additem() {
 
+    // 從 localStorage 獲取 JWT
+    const token = localStorage.getItem('token')
+
     // 解析 querystring
     const path = window.location.pathname
     const pathSegments = path.split('/')
@@ -14,11 +17,15 @@ async function additem() {
     const response = await fetch('/api/booking', {
         method: 'POST',
         headers: {
+        'Authorization': `Bearer ${token}`, // 將 JWT 放在 Authorization Header 中
         'Content-Type': 'application/json'
         },
         body: JSON.stringify({ "attractionId":attractionId, "date":date, "time":time, "price":price })
     });
-    alert('已加入購物車')
+    if (response.ok) {
+        alert('已加入購物車')
+    } else
+    alert('請先登入喔')
 }
 
 
@@ -27,10 +34,13 @@ async function additem() {
 //     cartlist()
 // })
 
-let order_trips = []
+window.order_trips = {}
 
 // 購物車中所有待確認行程 render 到畫面中
 function cartlist() {
+
+    // 從 localStorage 獲取 JWT
+    const token = localStorage.getItem('token')
 
     const container = document.getElementById('container') // 取得容器元素
     const amount = document.getElementById('amount')
@@ -39,7 +49,13 @@ function cartlist() {
         amount.innerText = totalAmount
     }
 
-    fetch('/api/booking')
+    // 不用 cookie, 在fetch時要自己加 header
+    fetch('/api/booking',{
+        headers: {
+            'Authorization': `Bearer ${token}`, // 將 JWT 放在 Authorization Header 中
+            'Content-Type': 'application/json'
+        }
+    })
     .then(response => response.json())
     .then(data => {
         for (let i = 0; i < data.data.length; i++) {
@@ -51,20 +67,21 @@ function cartlist() {
             const pick = document.createElement('input')
             pick.type = 'checkbox'
             pick.dataset.price = data.data[i].price; // 將價格儲存在 checkbox dataset 中
-            pick.dataset.cartId = data.data[i].id;
+            pick.dataset.cartId = data.data[i].id; // 將購物項目儲存在 checkbox dataset 中
+            pick.dataset.imgsrc = data.data[i].attraction.image
 
-            // 幫 checkbox 增加 eventlintener 計算總金額
+            // 幫 checkbox 增加 eventlistener 計算總金額
             pick.addEventListener('change', (event) => {
-                const cartId = event.target.dataset.id
+                const cartId = event.target.dataset.cartId
                 if (event.target.checked) {
                     totalAmount += parseInt(event.target.dataset.price)
-                    order_trips[cartId] = true
+                    window.order_trips[cartId] = event.target.dataset.imgsrc
                 } else {
                     totalAmount -= parseInt(event.target.dataset.price)
-                    order_trips[cartId] = false
+                    window.order_trips[cartId] = null
                 }
                 updateTotalAmount()
-                console.log(order_trips)
+                console.log(window.order_trips)
             })
 
             const ibox = document.createElement('div')

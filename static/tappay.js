@@ -158,6 +158,9 @@ function onSubmit(event) {
 // 產生訂單
 async function create_order(tappay_msg) {
 
+    // 從 localStorage 獲取 JWT
+    const token = localStorage.getItem('token')
+
     const name = document.getElementById('order-name').value
     const email = document.getElementById('order-email').value
     const phone = document.getElementById('order-phone').value
@@ -166,15 +169,23 @@ async function create_order(tappay_msg) {
     const response = await fetch('/api/orders', {
         method: 'POST',
         headers: {
+        'Authorization': `Bearer ${token}`, // 將 JWT 放在 Authorization Header 中
         'Content-Type': 'application/json'
         },
         body: JSON.stringify({
             "prime": tappay_msg.card.prime,
             "price": amount,
-            "trips": order_trips,
+            "trips": window.order_trips,
             "name": name,
             "email": email,
             "phone": phone
         })
     })
+
+    if (response.ok) {
+        let data = await response.json() // Await the JSON parsing
+        console.log(data)
+        location.href="/thankyou"
+    }
+
 }

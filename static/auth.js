@@ -60,6 +60,7 @@ async function signin() {
     const password = document.getElementById('password').value;
     const signinBtn = document.getElementById('signin-card');
     const signoutBtn = document.getElementById('signout-btn');
+    const note2 = document.getElementById('note2');
 
     const response = await fetch('/api/user/auth', {
         method: 'PUT',
@@ -73,17 +74,26 @@ async function signin() {
         const result = await response.json();
         // console.log(result.token);
         if(result.token) {
+
+            // 將 JWT 存儲在 localStorage 中
+            localStorage.setItem('token', result.token)
+
             signinBtn.style.display = "none";
             signoutBtn.style.display = "inline-block";
-            alert('登入成功');
+            // alert('登入成功');
+            // 重新整理，並顯示最新的登入狀態
+            window.location.href = '/'
         }
-        else 
-            alert('登入失敗:');
-        // 可以在此處重定向到其他頁面
-        // window.location.href = '/home';
-      } else {
-        const error = await response.json();
-        alert('Something error ' + error);
+      } 
+
+      else if (response.status === 401) {
+        note2.innerText = "帳號或密碼錯誤";
+      }
+      
+      else {
+        note2.innerText = "伺服器錯誤，請聯繫管理員"
+        // const error = await response.json();
+        // alert('Something error ' + error);
       }
 
 }
@@ -105,6 +115,17 @@ function showRegister() {
     }
 }
 
+
+function showSignin() {
+    const card = document.getElementById('card');
+    const cardx = document.getElementById('cardx');
+    const overlay = document.getElementById('overlay');
+
+    cardx.style.display = "none";
+    card.style.display = "block";
+    overlay.style.display = 'block';
+    document.addEventListener('click', handleClickOutside);
+}
 
 
 async function register() {
@@ -141,8 +162,12 @@ function signout() {
     const signoutBtn = document.getElementById('signout-btn')
     const signinBtn = document.getElementById('signin-card')
 
-    // 清除 cookie 中的 myjwt
-    document.cookie = "myjwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;"
+    // // 清除 cookie 中的 myjwt
+    // document.cookie = "myjwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;"
+
+    // 清除 localstorage 的 token
+    localStorage.removeItem('token')
+
     signoutBtn.style.display = "none"
     signinBtn.style.display = "inline-block"
 
@@ -157,10 +182,21 @@ async function checkLoginStatus() {
     console.log('checkLoginStatus running..')
     const signoutBtn = document.getElementById('signout-btn')
     const signinBtn = document.getElementById('signin-card')
+
+    // const response = await fetch('/api/user/auth', {
+    //     method: 'GET',
+    //     credentials: 'include'
+    // });
+
+
+    // 從 localStorage 獲取 JWT
+    const token = localStorage.getItem('token')
+    
+    // 將 JWT 作為 Bearer Token 放在 Authorization Header 中
     const response = await fetch('/api/user/auth', {
         method: 'GET',
-        credentials: 'include'
-    });
+        headers: {'Authorization': `Bearer ${token}`}
+    })
 
     if (response.ok) {
         console.log('checkLoginStatus signin..')
