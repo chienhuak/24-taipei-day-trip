@@ -388,7 +388,7 @@ async def create_order(request: Request, data:dict):
 		# 查找 DB 資料
 		with mysql.connector.connect(pool_name="hello") as mydb, mydb.cursor(buffered=True,dictionary=True) as mycursor :
 			query = f"""
-				SELECT cart.id, attractionId, attractions.name, attractions.address
+				SELECT cart.id, attractionId, attractions.name, attractions.address, cart.date, cart.time
 				FROM cart
 				JOIN attractions
 				ON attractions.id = cart.attractionId
@@ -400,6 +400,7 @@ async def create_order(request: Request, data:dict):
 
 			for item in items:
 				item['image'] = data['trips'][str(item['id'])]
+				item['date'] = item['date'].isoformat()
 				del item['id']
 			# print(items)
 
@@ -483,9 +484,36 @@ async def create_order(request: Request, data:dict):
 
 				return JSONResponse(status_code=400, content={
 				"error": true,
-				"message": Tappay_return_data['msg']
+				"message": Tappay_return_data['msg'],
+				"number": orderID,
 				})
 
 
+@app.get("/api/order/{orderID}", response_class=JSONResponse)
+async def attractions(request: Request, orderID:int):
+	with mysql.connector.connect(pool_name="hello") as mydb, mydb.cursor(buffered=True,dictionary=True) as mycursor :
+		
+		query = """
+		SELECT orderid, amount, detail, name, email, phone, status
+		FROM orders
+		WHERE orderid = %s 
+		"""
+		mycursor.execute(query, (orderID,))
+		results = mycursor.fetchall()
+
+		if results :
+			return {
+				"data": {
+					"number": results[0]['orderid'],
+					"price": results[0]['amount'],
+					"trip": json.loads(results[0]['detail']),
+					"contact": {
+					"name": results[0]['name'],
+					"email": results[0]['email'],
+					"phone": results[0]['phone'],
+					},
+					"status": results[0]['status']
+				}
+				}
 
 
