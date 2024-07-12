@@ -58,89 +58,106 @@ function cartlist() {
     })
     .then(response => response.json())
     .then(data => {
-        for (let i = 0; i < data.data.length; i++) {
-            // console.log(data.data[i])
+        if (!data.data || data.data.length === 0) {
+            // 如果 data.data 沒有值，則顯示 "沒有預定行程"
 
-            const cards_div = document.createElement('div')
-            cards_div.className = 'cards c-h book-h-v'
+            const checkoutinfo1 = document.getElementById('checkout-info-1')
+            const checkoutinfo2 = document.getElementById('checkout-info-2')
+            const checkout = document.getElementById('checkout')
 
-            const pick = document.createElement('input')
-            pick.type = 'checkbox'
-            pick.dataset.price = data.data[i].price; // 將價格儲存在 checkbox dataset 中
-            pick.dataset.cartId = data.data[i].id; // 將購物項目儲存在 checkbox dataset 中
-            pick.dataset.imgsrc = data.data[i].attraction.image
-
-            // 幫 checkbox 增加 eventlistener 計算總金額
-            pick.addEventListener('change', (event) => {
-                const cartId = event.target.dataset.cartId
-                if (event.target.checked) {
-                    totalAmount += parseInt(event.target.dataset.price)
-                    window.order_trips[cartId] = event.target.dataset.imgsrc
-                } else {
-                    totalAmount -= parseInt(event.target.dataset.price)
-                    window.order_trips[cartId] = null
-                }
-                updateTotalAmount()
-                console.log(window.order_trips)
-            })
-
-            const trashdiv = document.createElement('div')
-            trashdiv.addEventListener('click', deleteitem)
-            trashdiv.className = 'trash-div'
-
-            const trashicon = document.createElement('img')
-            trashicon.className = 'trash-icon'
-            trashicon.src = '/static/images/trash_icon.png'
-            trashicon.dataset.cartId = data.data[i].id; // 將購物項目儲存在 trashicon dataset 中
-            trashdiv.appendChild(trashicon)
-
-            const ibox = document.createElement('div')
-            ibox.className = 'ibox'
-
-            const img = document.createElement('img')
-            img.className = 'bookingimg'
-            img.src = data.data[i].attraction.image
-            ibox.appendChild(img)
-
-            const tbox = document.createElement('div')
-            tbox.className = 'tbox'
-
-            const name_p = document.createElement('p')
-            name_p.innerText = "台北一日遊：" + data.data[i].attraction.name
-            name_p.className = 'tclass'
-
-            const date_p = document.createElement('p')
-            date_p.innerText = `日期： ${data.data[i].date}`
-
-            const time_p = document.createElement('p')
-            time_p.innerText = `時間： ${data.data[i].time}`
-
-            const price_p = document.createElement('p');
-            price_p.innerText = `費用： 新台幣 ${data.data[i].price} 元`
-
-            const address_p = document.createElement('p')
-            address_p.innerText = `地點： ${data.data[i].attraction.address}`
-
-            cards_div.appendChild(pick)
-            cards_div.appendChild(ibox)
-            cards_div.appendChild(tbox)
-            cards_div.appendChild(trashdiv)
-            tbox.appendChild(name_p)
-            tbox.appendChild(date_p)
-            tbox.appendChild(time_p)
-            tbox.appendChild(price_p)
-            tbox.appendChild(address_p)
-
-            container.appendChild(cards_div); // 將生成的元素附加到 container
+            const message = document.createElement('p')
+            message.innerText = "沒有預定行程"
+            container.appendChild(message)
+            checkoutinfo1.style.display = 'none'
+            checkoutinfo2.style.display = 'none'
+            checkout.style.display = 'none'
+        } else {
+            for (let i = 0; i < data.data.length; i++) {
+                // console.log(data.data[i])
+    
+                const cards_div = document.createElement('div')
+                cards_div.className = 'cards c-h book-h-v'
+    
+                const pick = document.createElement('input')
+                pick.type = 'checkbox'
+                pick.dataset.price = data.data[i].price; // 將價格儲存在 checkbox dataset 中
+                pick.dataset.cartId = data.data[i].id; // 將購物項目儲存在 checkbox dataset 中
+                pick.dataset.imgsrc = data.data[i].attraction.image
+    
+                // 幫 checkbox 增加 eventlistener 計算總金額
+                pick.addEventListener('change', (event) => {
+                    const cartId = event.target.dataset.cartId
+                    if (event.target.checked) {
+                        totalAmount += parseInt(event.target.dataset.price)
+                        window.order_trips[cartId] = event.target.dataset.imgsrc
+                    } else {
+                        totalAmount -= parseInt(event.target.dataset.price)
+                        window.order_trips[cartId] = null
+                    }
+                    updateTotalAmount()
+                    console.log(window.order_trips)
+                })
+    
+                const trashdiv = document.createElement('div')
+                trashdiv.addEventListener('click', deleteitem)
+                trashdiv.className = 'trash-div'
+    
+                const trashicon = document.createElement('img')
+                trashicon.className = 'trash-icon'
+                trashicon.src = '/static/images/trash_icon.png'
+                trashicon.dataset.cartId = data.data[i].id; // 將購物項目儲存在 trashicon dataset 中
+                trashdiv.appendChild(trashicon)
+    
+                const ibox = document.createElement('div')
+                ibox.className = 'ibox'
+    
+                const img = document.createElement('img')
+                img.className = 'bookingimg'
+                img.src = data.data[i].attraction.image
+                ibox.appendChild(img)
+    
+                const tbox = document.createElement('div')
+                tbox.className = 'tbox'
+    
+                const name_p = document.createElement('p')
+                name_p.innerText = "台北一日遊：" + data.data[i].attraction.name
+                name_p.className = 'tclass'
+    
+                const date_p = document.createElement('p')
+                date_p.innerText = `日期： ${data.data[i].date}`
+    
+                const time_p = document.createElement('p')
+                time_p.innerText = `時間： ${data.data[i].time}`
+    
+                const price_p = document.createElement('p');
+                price_p.innerText = `費用： 新台幣 ${data.data[i].price} 元`
+    
+                const address_p = document.createElement('p')
+                address_p.innerText = `地點： ${data.data[i].attraction.address}`
+    
+                cards_div.appendChild(pick)
+                cards_div.appendChild(ibox)
+                cards_div.appendChild(tbox)
+                cards_div.appendChild(trashdiv)
+                tbox.appendChild(name_p)
+                tbox.appendChild(date_p)
+                tbox.appendChild(time_p)
+                tbox.appendChild(price_p)
+                tbox.appendChild(address_p)
+    
+                container.appendChild(cards_div); // 將生成的元素附加到 container
+            }
         }
+    
+            updateTotalAmount()
+    
+        })
+        .catch(error => {
+            console.error('Error fetching data:', error);
+        });
+    }
+        
 
-        updateTotalAmount()
-
-    })
-    .catch(error => {
-        console.error('Error fetching data:', error);
-    });
-}
 
 
 
