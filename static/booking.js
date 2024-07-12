@@ -1,6 +1,9 @@
 // 添加新行程到購物車中
 async function additem() {
 
+    // 從 localStorage 獲取 JWT
+    const token = localStorage.getItem('token')
+
     // 解析 querystring
     const path = window.location.pathname
     const pathSegments = path.split('/')
@@ -14,11 +17,15 @@ async function additem() {
     const response = await fetch('/api/booking', {
         method: 'POST',
         headers: {
+        'Authorization': `Bearer ${token}`, // 將 JWT 放在 Authorization Header 中
         'Content-Type': 'application/json'
         },
         body: JSON.stringify({ "attractionId":attractionId, "date":date, "time":time, "price":price })
     });
-    alert('已加入購物車')
+    if (response.ok) {
+        alert('已加入購物車')
+    } else
+    alert('請先登入喔')
 }
 
 
@@ -41,7 +48,7 @@ function cartlist() {
     const updateTotalAmount = () => {
         amount.innerText = totalAmount
     }
-    
+
     // 不用 cookie, 在fetch時要自己加 header
     fetch('/api/booking',{
         headers: {

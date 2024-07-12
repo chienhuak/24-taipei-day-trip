@@ -252,46 +252,32 @@ async def register(request: Request, data:dict):
 
 # 添加新行程到購物車中
 @app.post("/api/booking", response_class=JSONResponse)
-async def additem(request: Request, data:dict, myjwt: Union[str, None] = Cookie(None)):
+async def additem(request: Request, data:dict):
 
-	# 解析請求的 JSON 資料
-	data = await request.json()
+	# 從 Authorization Header 中提取 token
+	auth_header = request.headers.get('Authorization')
+	if auth_header:
+		myjwt = auth_header.split(" ")[1] 
 
-	# 解碼 JWT
-	myjwtx = jwt.decode(myjwt,jwtkey,algorithms="HS256")
+		# 解碼 JWT
+		myjwtx = jwt.decode(myjwt,jwtkey,algorithms="HS256")
 
-	# # 建立 TABLE 到 DB
-	# with mysql.connector.connect(pool_name="hello") as mydb, mydb.cursor(buffered=True,dictionary=True) as mycursor :
-	# 	query = """
-	# 		CREATE TABLE cart (
-	# 		id BIGINT AUTO_INCREMENT PRIMARY KEY,
-	# 		username VARCHAR(255) NOT NULL,
-	# 		attractionId BIGINT NOT NULL,
-	# 		date DATE NOT NULL DEFAULT CURRENT_DATE,
-	# 		time ENUM('morning', 'afternoon') NOT NULL,
-	# 	 	count INT NOT NULL,	
-	# 		unitprice INT NOT NULL,
-	# 		created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-	# 		);
-	# 		"""
-	# 	mycursor.execute(query)
-	# 	mydb.commit()
+		# 解析請求的 JSON 資料
+		data = await request.json()
 
-	# 將資料存到 購物車 DB
-	with mysql.connector.connect(pool_name="hello") as mydb, mydb.cursor(buffered=True,dictionary=True) as mycursor :
-		query = """
-			INSERT INTO cart (username, attractionId, date, time, price)
-			VALUES (%s, %s, %s, %s, %s)
-			"""
-		mycursor.execute(query, (myjwtx["email"], int(data["attractionId"]), data["date"], data["time"], data["price"],))
-		mydb.commit()
-		
-
-		return JSONResponse(status_code=200, content={
-				"date": data["date"], 
-				"time": data["time"], 
-				"price": data["price"]})
-
+		# 將資料存到 購物車 DB
+		with mysql.connector.connect(pool_name="hello") as mydb, mydb.cursor(buffered=True,dictionary=True) as mycursor :
+			query = """
+				INSERT INTO cart (username, attractionId, date, time, price)
+				VALUES (%s, %s, %s, %s, %s)
+				"""
+			mycursor.execute(query, (myjwtx["email"], int(data["attractionId"]), data["date"], data["time"], data["price"],))
+			mydb.commit()
+			
+			return JSONResponse(status_code=200, content={
+					"date": data["date"], 
+					"time": data["time"], 
+					"price": data["price"]})
 
 
 # 購物車中的預訂行程
