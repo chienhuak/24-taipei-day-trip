@@ -367,12 +367,17 @@ async def create_order(request: Request, data:dict):
 
 	# 從 Authorization Header 中提取 token
 	auth_header = request.headers.get('Authorization')
-	if auth_header:
+	if not auth_header:
+		return JSONResponse(status_code=403, content={
+			"error": true,
+			"message": "未登入系統，拒絕存取"
+			})
+
+	else :
 		myjwt = auth_header.split(" ")[1] 
 
 		# 解碼 JWT
 		myjwtx = jwt.decode(myjwt,jwtkey,algorithms="HS256")
-
 
 		# print(data)
 		# data['trips'] --> {'12': True, '13': True, '14': True}
@@ -403,7 +408,13 @@ async def create_order(request: Request, data:dict):
 				VALUES (%s, %s, %s, %s, %s, %s)
 				"""
 			mycursor.execute(query2, (myjwtx["email"], data['price'], data['name'], data["email"], data["phone"], json.dumps(items)))
+			
+			# 獲取 MySQL 最新一筆自動產生的 orderID
+			orderID = mycursor.lastrowid
+			# print("Inserted orderID:", orderID)
+
 			mydb.commit()
+
 
 
 			# 傳資料給 Tappay
@@ -428,11 +439,53 @@ async def create_order(request: Request, data:dict):
 			}
 			Tappay_response = requests.post(tappay_url, headers=headers, json=payload)
 			Tappay_return_data = Tappay_response.json()
+			print(Tappay_return_data)
 
 			if Tappay_return_data['status'] == 0:
+
 				print('付款成功')
+
+				query3 = """
+				INSERT INTO payments (orderid, amount, result)
+				VALUES (%s, %s, 'success')
+				"""
+				mycursor.execute(query3, (orderID, Tappay_return_data['amount']))
+
+				query4 = """
+				UPDATE orders SET status = 'paid'
+				WHERE orderid = %s
+				"""
+				mycursor.execute(query4, (orderID,))
+
+				mydb.commit()
+
+				return {
+					"data": {
+						"number": orderID,
+						"payment": {
+						"status": 0,
+						"message": "付款成功"
+						}
+					}
+					}
+
+
 			else : 
+
 				print('付款失敗')
-				print(Tappay_return_data)
+
+				query3 = """
+				INSERT INTO payments (orderid, amount, result)
+				VALUES (%s, %s, 'success')
+				"""
+				mycursor.execute(query3, (orderID, Tappay_return_data['amount']))
+				mydb.commit()
+
+				return JSONResponse(status_code=400, content={
+				"error": true,
+				"message": Tappay_return_data['msg']
+				})
+
+
 
 
