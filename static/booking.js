@@ -32,14 +32,23 @@ let order_trips = []
 // 購物車中所有待確認行程 render 到畫面中
 function cartlist() {
 
+    // 從 localStorage 獲取 JWT
+    const token = localStorage.getItem('token')
+
     const container = document.getElementById('container') // 取得容器元素
     const amount = document.getElementById('amount')
     let totalAmount = 0
     const updateTotalAmount = () => {
         amount.innerText = totalAmount
     }
-
-    fetch('/api/booking')
+    
+    // 不用 cookie, 在fetch時要自己加 header
+    fetch('/api/booking',{
+        headers: {
+            'Authorization': `Bearer ${token}`, // 將 JWT 放在 Authorization Header 中
+            'Content-Type': 'application/json'
+        }
+    })
     .then(response => response.json())
     .then(data => {
         for (let i = 0; i < data.data.length; i++) {
@@ -53,7 +62,7 @@ function cartlist() {
             pick.dataset.price = data.data[i].price; // 將價格儲存在 checkbox dataset 中
             pick.dataset.cartId = data.data[i].id;
 
-            // 幫 checkbox 增加 eventlintener 計算總金額
+            // 幫 checkbox 增加 eventlistener 計算總金額
             pick.addEventListener('change', (event) => {
                 const cartId = event.target.dataset.id
                 if (event.target.checked) {
