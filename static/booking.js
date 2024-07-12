@@ -62,7 +62,7 @@ function cartlist() {
             // console.log(data.data[i])
 
             const cards_div = document.createElement('div')
-            cards_div.className = 'cards c-h'
+            cards_div.className = 'cards c-h book-h-v'
 
             const pick = document.createElement('input')
             pick.type = 'checkbox'
@@ -106,7 +106,8 @@ function cartlist() {
             tbox.className = 'tbox'
 
             const name_p = document.createElement('p')
-            name_p.innerText = data.data[i].attraction.name
+            name_p.innerText = "台北一日遊：" + data.data[i].attraction.name
+            name_p.className = 'tclass'
 
             const date_p = document.createElement('p')
             date_p.innerText = `日期： ${data.data[i].date}`
