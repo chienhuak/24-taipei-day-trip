@@ -479,11 +479,11 @@ async def create_order(request: Request, data:dict):
 				INSERT INTO payments (orderid, amount, result)
 				VALUES (%s, %s, 'success')
 				"""
-				mycursor.execute(query3, (orderID, Tappay_return_data['amount']))
+				mycursor.execute(query3, (orderID, data['price']))  # TAPPAY 付款失敗沒有金額
 				mydb.commit()
 
 				return JSONResponse(status_code=400, content={
-				"error": true,
+				"error": True,
 				"message": Tappay_return_data['msg'],
 				"number": orderID,
 				})

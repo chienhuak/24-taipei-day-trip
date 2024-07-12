@@ -185,7 +185,12 @@ async function create_order(tappay_msg) {
     if (response.ok) {
         let data = await response.json() // Await the JSON parsing
         console.log(data)
-        location.href="/thankyou"
+        location.href=`/thankyou?number=${data.data.number}`
+    }
+    else {
+        let data = await response.json() // Await the JSON parsing
+        console.log(data)
+        location.href=`/thankyou?number=${data.number}`
     }
 
 }
