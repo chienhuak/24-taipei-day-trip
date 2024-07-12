@@ -39,6 +39,14 @@ nav {
     border-bottom: 1px solid #ddd;
 }
 
+.nav-group {
+    display: flex;
+    width: 1200px;
+    justify-content: space-between;
+    align-items: center;
+    margin: auto;
+}
+
 /* Container needed to position the button. Adjust the width as needed */
 .container {
     position: relative;
@@ -330,6 +338,10 @@ html {
     
     .slide-bar {
         width: 80%;
+    }
+
+    .nav-group {
+        width: 100%;
     }
 
 }
