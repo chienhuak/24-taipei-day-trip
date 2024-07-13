@@ -1,9 +1,11 @@
 .cards {
-    width: 980px;
+    width: 1000px;
     height: 200px;
-    border: solid pink 1px;
-    background-color: rgb(221, 239, 239, 0.3);
-    margin : 8px auto;
+    padding: 10px;
+    /* border: solid pink 1px;
+    background-color: rgb(221, 239, 239, 0.3); */
+    margin : auto;
+    box-sizing: border-box;
 }
 
 .bookingimg {
@@ -50,21 +52,21 @@ nav {
     margin: 0;
     padding: 10px 0;
     border-bottom: 1px solid #ddd;
-    width: 100%;
+    width: 1000px;
     margin : 0px auto;
 }
 
 .checkout-info {
-    width: 980px;
+    width: 1000px;
     height: auto;
     margin: auto;
-    padding: 25px;
+    padding: 10px;
     box-sizing: border-box;
     border-bottom: 1px solid #ddd;
 }
 
 #checkout {
-    width: 980px;
+    width: 1000px;
     margin: auto;
     text-align: right; /* 確保內部內容靠右 */
 }
@@ -99,6 +101,20 @@ nav {
 }
 
 
+
+.pickdiv {
+    /* display: flex; */
+    text-align: center;
+}
+
+.pick {
+    width: 25px;
+    height: 25px;
+    margin: 15px;
+    box-sizing : border-box;
+}
+
+
 @media (max-width: 1200px){
 
 
@@ -111,6 +127,7 @@ nav {
 
     .tbox {
         width: 540px;
+        height: auto;
     }
 
     .ibox {
