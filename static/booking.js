@@ -35,6 +35,11 @@ async function additem() {
 // })
 
 window.order_trips = {}
+let totalAmount = 0
+const updateTotalAmount = () => {
+    amount.innerText = totalAmount
+}
+
 
 // 購物車中所有待確認行程 render 到畫面中
 function cartlist() {
@@ -44,10 +49,7 @@ function cartlist() {
 
     const container = document.getElementById('container') // 取得容器元素
     const amount = document.getElementById('amount')
-    let totalAmount = 0
-    const updateTotalAmount = () => {
-        amount.innerText = totalAmount
-    }
+
 
     // 不用 cookie, 在fetch時要自己加 header
     fetch('/api/booking',{
@@ -78,7 +80,10 @@ function cartlist() {
                 const cards_div = document.createElement('div')
                 cards_div.className = 'cards c-h book-h-v'
     
+                const pickdiv = document.createElement('div')
+                pickdiv.className = 'pickdiv'
                 const pick = document.createElement('input')
+                pick.className = 'pick'
                 pick.type = 'checkbox'
                 pick.dataset.price = data.data[i].price; // 將價格儲存在 checkbox dataset 中
                 pick.dataset.cartId = data.data[i].id; // 將購物項目儲存在 checkbox dataset 中
@@ -100,6 +105,7 @@ function cartlist() {
     
                 const trashdiv = document.createElement('div')
                 trashdiv.addEventListener('click', deleteitem)
+                trashdiv.dataset.price = data.data[i].price
                 trashdiv.className = 'trash-div'
     
                 const trashicon = document.createElement('img')
@@ -135,10 +141,12 @@ function cartlist() {
                 const address_p = document.createElement('p')
                 address_p.innerText = `地點： ${data.data[i].attraction.address}`
     
-                cards_div.appendChild(pick)
+
                 cards_div.appendChild(ibox)
                 cards_div.appendChild(tbox)
-                cards_div.appendChild(trashdiv)
+                cards_div.appendChild(pickdiv)
+                pickdiv.appendChild(pick)
+                pickdiv.appendChild(trashdiv)
                 tbox.appendChild(name_p)
                 tbox.appendChild(date_p)
                 tbox.appendChild(time_p)
@@ -184,8 +192,20 @@ function deleteitem(event) {
         console.log(data)
         // cartlist()
         const cardToRemove = event.target.closest('.cards')
+        // const pick = event.target.closest('.pick')
         if (cardToRemove) {
+
+            // 總金額扣除刪除項目金額，並計算結果
+            const checkbox = cardToRemove.querySelector('.pick');
+            if (checkbox && checkbox.checked) {
+                totalAmount -= parseInt(checkbox.dataset.price);
+                updateTotalAmount();
+            }
+            window.order_trips[checkbox.dataset.cartId] = null
+
+            // 將卡片移除
             cardToRemove.remove()
+
         }
     })
 
