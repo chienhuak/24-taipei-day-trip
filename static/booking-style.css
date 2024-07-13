@@ -1,11 +1,12 @@
 .cards {
     width: 1000px;
-    height: 200px;
+    height: auto;
     padding: 10px;
     /* border: solid pink 1px;
     background-color: rgb(221, 239, 239, 0.3); */
-    margin : auto;
+    margin : 20px auto;
     box-sizing: border-box;
+    border-bottom: 1px solid #ddd;
 }
 
 .bookingimg {
@@ -112,6 +113,12 @@ nav {
     height: 25px;
     margin: 15px;
     box-sizing : border-box;
+}
+
+.message {
+    width: 1000px;
+    margin: auto;
+    padding-top: 25px;
 }
 
 

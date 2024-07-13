@@ -68,7 +68,8 @@ function cartlist() {
             const checkout = document.getElementById('checkout')
 
             const message = document.createElement('p')
-            message.innerText = "沒有預定行程"
+            message.innerText = "沒有待預定的行程"
+            message.className = "message"
             container.appendChild(message)
             checkoutinfo1.style.display = 'none'
             checkoutinfo2.style.display = 'none'
