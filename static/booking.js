@@ -134,7 +134,9 @@ function cartlist() {
                 date_p.innerText = `日期： ${data.data[i].date}`
     
                 const time_p = document.createElement('p')
-                time_p.innerText = `時間： ${data.data[i].time}`
+                if (data.data[i].time === 'morning') { time_p.innerText = "時間： 早上 9 點到下午 4 點" }
+                else if (data.data[i].time === 'afternoon') { time_p.innerText = "時間： 下午 2 點到晚上 9 點" }
+                
     
                 const price_p = document.createElement('p');
                 price_p.innerText = `費用： 新台幣 ${data.data[i].price} 元`
