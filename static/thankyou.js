@@ -19,7 +19,14 @@ fetch(`/api/order/${number}`,{
 })
 .then(response => response.json())
 .then(data => {
-    orderID.innerText = number
-    paymentstatus.innerText = data.data.status
+    if (data.data) {
+        orderID.innerText = number
+        paymentstatus.innerText = data.data.status
+    }
+    else {
+        orderID.innerText = number
+        paymentstatus.innerText = data.data.status
+    }
+
 
 })

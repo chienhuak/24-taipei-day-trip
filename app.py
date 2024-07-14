@@ -512,10 +512,10 @@ async def create_order(request: Request, data:dict):
 				print('付款失敗')
 
 				query3 = """
-				INSERT INTO payments (orderid, amount, result)
-				VALUES (%s, %s, 'success')
+				INSERT INTO payments (orderid, amount, result, note)
+				VALUES (%s, %s, 'fail', %s)
 				"""
-				mycursor.execute(query3, (orderID, data['price']))  # TAPPAY 付款失敗沒有金額
+				mycursor.execute(query3, (orderID, data['price'], Tappay_return_data['msg']))  # TAPPAY 付款失敗沒有金額
 				mydb.commit()
 
 				return JSONResponse(status_code=400, content={
@@ -530,14 +530,20 @@ async def get_order(request: Request, orderID:int):
 	with mysql.connector.connect(pool_name="hello") as mydb, mydb.cursor(buffered=True,dictionary=True) as mycursor :
 		
 		query = """
-		SELECT orderid, amount, detail, name, email, phone, status
-		FROM orders
-		WHERE orderid = %s 
+		SELECT o.orderid, o.amount, detail, o.name, o.email, o.phone, status, p.note
+		FROM orders o
+		JOIN payments p ON o.orderid = p.orderid
+		JOIN (
+			SELECT orderid, MAX(paymentTime) AS latest_payment_date
+			FROM payments
+			GROUP BY orderid
+		) tempQuery ON p.orderid = tempQuery.orderid AND p.paymentTime = tempQuery.latest_payment_date
+		WHERE o.orderid = %s 
 		"""
 		mycursor.execute(query, (orderID,))
 		results = mycursor.fetchall()
 
-		if results :
+		if results[0]['status'] == "paid" :
 			return {
 				"data": {
 					"number": results[0]['orderid'],
@@ -551,5 +557,21 @@ async def get_order(request: Request, orderID:int):
 					"status": results[0]['status']
 				}
 				}
+
+		elif results[0]['status'] == "unpaid" :
+			return {
+				"data": {
+					"number": results[0]['orderid'],
+					"price": results[0]['amount'],
+					"trip": json.loads(results[0]['detail']),
+					"contact": {
+					"name": results[0]['name'],
+					"email": results[0]['email'],
+					"phone": results[0]['phone'],
+					},
+					"status": results[0]['note']
+				}
+				}
+
 
 
