@@ -527,51 +527,73 @@ async def create_order(request: Request, data:dict):
 
 @app.get("/api/order/{orderID}", response_class=JSONResponse)
 async def get_order(request: Request, orderID:int):
-	with mysql.connector.connect(pool_name="hello") as mydb, mydb.cursor(buffered=True,dictionary=True) as mycursor :
-		
-		query = """
-		SELECT o.orderid, o.amount, detail, o.name, o.email, o.phone, status, p.note
-		FROM orders o
-		JOIN payments p ON o.orderid = p.orderid
-		JOIN (
-			SELECT orderid, MAX(paymentTime) AS latest_payment_date
-			FROM payments
-			GROUP BY orderid
-		) tempQuery ON p.orderid = tempQuery.orderid AND p.paymentTime = tempQuery.latest_payment_date
-		WHERE o.orderid = %s 
-		"""
-		mycursor.execute(query, (orderID,))
-		results = mycursor.fetchall()
 
-		if results[0]['status'] == "paid" :
-			return {
-				"data": {
-					"number": results[0]['orderid'],
-					"price": results[0]['amount'],
-					"trip": json.loads(results[0]['detail']),
-					"contact": {
-					"name": results[0]['name'],
-					"email": results[0]['email'],
-					"phone": results[0]['phone'],
-					},
-					"status": results[0]['status']
-				}
-				}
+	# 從 Authorization Header 中提取 token
+	auth_header = request.headers.get('Authorization')
+	if not auth_header:
+		return JSONResponse(status_code=403, content={
+			"error": true,
+			"message": "未登入系統，拒絕存取"
+			})
+	
+	else :
+		myjwt = auth_header.split(" ")[1] 
 
-		elif results[0]['status'] == "unpaid" :
-			return {
-				"data": {
-					"number": results[0]['orderid'],
-					"price": results[0]['amount'],
-					"trip": json.loads(results[0]['detail']),
-					"contact": {
-					"name": results[0]['name'],
-					"email": results[0]['email'],
-					"phone": results[0]['phone'],
-					},
-					"status": results[0]['note']
-				}
-				}
+		# 解碼 JWT
+		myjwtx = jwt.decode(myjwt,jwtkey,algorithms="HS256")
+
+		with mysql.connector.connect(pool_name="hello") as mydb, mydb.cursor(buffered=True,dictionary=True) as mycursor :
+			
+			query = """
+			SELECT o.orderid, o.amount, detail, o.name, o.email, o.phone, status, p.note
+			FROM orders o
+			JOIN payments p ON o.orderid = p.orderid
+			JOIN (
+				SELECT orderid, MAX(paymentTime) AS latest_payment_date
+				FROM payments
+				GROUP BY orderid
+			) tempQuery ON p.orderid = tempQuery.orderid AND p.paymentTime = tempQuery.latest_payment_date
+			WHERE o.orderid = %s AND o.username = %s
+			"""
+			mycursor.execute(query, (orderID, myjwtx['email']))
+			results = mycursor.fetchall()
+
+			if not results : 
+				return {
+					"data": None
+					}
+
+			elif results[0]['status'] == "paid" :
+				return {
+					"data": {
+						"number": results[0]['orderid'],
+						"price": results[0]['amount'],
+						"trip": json.loads(results[0]['detail']),
+						"contact": {
+						"name": results[0]['name'],
+						"email": results[0]['email'],
+						"phone": results[0]['phone'],
+						},
+						"status": results[0]['status']
+					}
+					}
+
+			elif results[0]['status'] == "unpaid" :
+				return {
+					"data": {
+						"number": results[0]['orderid'],
+						"price": results[0]['amount'],
+						"trip": json.loads(results[0]['detail']),
+						"contact": {
+						"name": results[0]['name'],
+						"email": results[0]['email'],
+						"phone": results[0]['phone'],
+						},
+						"status": results[0]['note']
+					}
+					}
+
+
 
 
 
