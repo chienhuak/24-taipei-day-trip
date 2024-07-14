@@ -84,15 +84,23 @@ nav {
 }
 
 .input-style {
+    width:200px;
+    height: 38px;
+    border-radius: 5px;
     margin: 5px 0px;
+    border: 1px solid #ddd;
+    padding: 10px;
+    box-sizing: border-box;
 }
 
 .tpfield {
-    height: 20px;
-    width: 169.6px;
-    border: 1px solid gray;
-    margin: 3px 0;
-    padding: 0.6px;
+    width:200px;
+    height: 38px;
+    border-radius: 5px;
+    margin: 5px 0px;
+    border: 1px solid #ddd;
+    padding: 10px;
+    box-sizing: border-box;
 }
 
 .tclass {
