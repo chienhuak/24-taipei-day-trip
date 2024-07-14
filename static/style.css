@@ -316,6 +316,17 @@ nav {
     cursor: pointer; /* 當 hover 時變成指針形狀 */
 }
 
+.container1200 {
+    width: 1200px;
+    margin:auto;
+}
+
+.trash-icon {
+    width: 35px;
+    padding: 10px;
+    cursor: pointer;
+}
+
 /* 
 html {
     overflow-y: scroll;

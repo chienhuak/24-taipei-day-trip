@@ -361,6 +361,42 @@ async def cart_api(request: Request):
 				return {"data": None}
 
 
+# 刪除購物車中的項目
+@app.delete("/api/booking", response_class=JSONResponse)
+async def delete_item(request: Request, data:dict):
+
+	# 從 Authorization Header 中提取 token
+	auth_header = request.headers.get('Authorization')
+	if not auth_header:
+		return {
+			"error": true,
+			"message": "未登入"
+			}
+
+	else :
+		myjwt = auth_header.split(" ")[1] 
+
+		# 解碼 JWT
+		myjwtx = jwt.decode(myjwt,jwtkey,algorithms="HS256")
+
+		# 從 DB 刪除
+		with mysql.connector.connect(pool_name="hello") as mydb, mydb.cursor(buffered=True,dictionary=True) as mycursor :
+			query = """
+				DELETE FROM cart 
+				WHERE id = %s
+				"""
+			mycursor.execute(query, (data['cartId'],))
+			mydb.commit()	
+
+			if mycursor.rowcount > 0:
+				return {"ok": True}
+			else:
+				return {
+					"error": True,
+					"message": "刪除失敗"
+					}
+
+
 # 產生訂單
 @app.post("/api/orders", response_class=JSONResponse)
 async def create_order(request: Request, data:dict):
@@ -479,18 +515,18 @@ async def create_order(request: Request, data:dict):
 				INSERT INTO payments (orderid, amount, result)
 				VALUES (%s, %s, 'success')
 				"""
-				mycursor.execute(query3, (orderID, Tappay_return_data['amount']))
+				mycursor.execute(query3, (orderID, data['price']))  # TAPPAY 付款失敗沒有金額
 				mydb.commit()
 
 				return JSONResponse(status_code=400, content={
-				"error": true,
+				"error": True,
 				"message": Tappay_return_data['msg'],
 				"number": orderID,
 				})
 
 
 @app.get("/api/order/{orderID}", response_class=JSONResponse)
-async def attractions(request: Request, orderID:int):
+async def get_order(request: Request, orderID:int):
 	with mysql.connector.connect(pool_name="hello") as mydb, mydb.cursor(buffered=True,dictionary=True) as mycursor :
 		
 		query = """

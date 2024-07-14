@@ -210,3 +210,22 @@ async function checkLoginStatus() {
 }
 
 // window.onload = checkLoginStatus;
+
+
+async function checkAndRedirect() {
+    // 從 localStorage 獲取 JWT
+    const token = localStorage.getItem('token')
+    
+    // 將 JWT 作為 Bearer Token 放在 Authorization Header 中
+    const response = await fetch('/api/user/auth', {
+        method: 'GET',
+        headers: {'Authorization': `Bearer ${token}`}
+    })
+
+    if (response.ok) {
+        window.location.href = '/booking'
+    }
+    else {
+        window.location.href = '/'
+    }
+}
