@@ -478,6 +478,14 @@ async def create_order(request: Request, data:dict):
 			Tappay_return_data = Tappay_response.json()
 			print(Tappay_return_data)
 
+			query5 = f"""
+			DELETE FROM cart
+			WHERE username = %s AND id in ({','.join(['%s'] * len(trips))})
+			"""
+			mycursor.execute(query5, (myjwtx["email"],*trips))
+
+			mydb.commit()
+
 			if Tappay_return_data['status'] == 0:
 
 				print('付款成功')
