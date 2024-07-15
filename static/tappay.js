@@ -190,9 +190,15 @@ async function create_order(tappay_msg) {
     }
     else {
         let data = await response.json() // Await the JSON parsing
-        console.log(data)
-        alert("訂單已建立，付款失敗")
-        location.href=`/thankyou?number=${data.number}`
+        if (data.message === "沒有選擇任何商品") {
+            alert("請先選擇商品，再送出訂單")
+        }
+        else {
+            console.log(data)
+            alert("訂單已建立，付款失敗")
+            location.href=`/thankyou?number=${data.number}`
+        }
+
     }
 
 }

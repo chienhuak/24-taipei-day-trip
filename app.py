@@ -405,7 +405,7 @@ async def create_order(request: Request, data:dict):
 	auth_header = request.headers.get('Authorization')
 	if not auth_header:
 		return JSONResponse(status_code=403, content={
-			"error": true,
+			"error": True,
 			"message": "未登入系統，拒絕存取"
 			})
 
@@ -420,6 +420,12 @@ async def create_order(request: Request, data:dict):
 		print(data['trips'])
 		trips = [key for key, value in data['trips'].items() if value]
 		print(trips)
+
+		if not trips:
+			return JSONResponse(status_code=400, content={
+				"error": True,
+				"message": "沒有選擇任何商品"
+			})
 
 		# 查找 DB 資料
 		with mysql.connector.connect(pool_name="hello") as mydb, mydb.cursor(buffered=True,dictionary=True) as mycursor :
