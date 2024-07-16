@@ -405,7 +405,7 @@ async def create_order(request: Request, data:dict):
 	auth_header = request.headers.get('Authorization')
 	if not auth_header:
 		return JSONResponse(status_code=403, content={
-			"error": true,
+			"error": True,
 			"message": "未登入系統，拒絕存取"
 			})
 
@@ -420,6 +420,12 @@ async def create_order(request: Request, data:dict):
 		print(data['trips'])
 		trips = [key for key, value in data['trips'].items() if value]
 		print(trips)
+
+		if not trips:
+			return JSONResponse(status_code=400, content={
+				"error": True,
+				"message": "沒有選擇任何商品"
+			})
 
 		# 查找 DB 資料
 		with mysql.connector.connect(pool_name="hello") as mydb, mydb.cursor(buffered=True,dictionary=True) as mycursor :
@@ -478,6 +484,14 @@ async def create_order(request: Request, data:dict):
 			Tappay_return_data = Tappay_response.json()
 			print(Tappay_return_data)
 
+			query5 = f"""
+			DELETE FROM cart
+			WHERE username = %s AND id in ({','.join(['%s'] * len(trips))})
+			"""
+			mycursor.execute(query5, (myjwtx["email"],*trips))
+
+			mydb.commit()
+
 			if Tappay_return_data['status'] == 0:
 
 				print('付款成功')
@@ -512,10 +526,10 @@ async def create_order(request: Request, data:dict):
 				print('付款失敗')
 
 				query3 = """
-				INSERT INTO payments (orderid, amount, result)
-				VALUES (%s, %s, 'success')
+				INSERT INTO payments (orderid, amount, result, note)
+				VALUES (%s, %s, 'fail', %s)
 				"""
-				mycursor.execute(query3, (orderID, data['price']))  # TAPPAY 付款失敗沒有金額
+				mycursor.execute(query3, (orderID, data['price'], Tappay_return_data['msg']))  # TAPPAY 付款失敗沒有金額
 				mydb.commit()
 
 				return JSONResponse(status_code=400, content={
@@ -527,29 +541,73 @@ async def create_order(request: Request, data:dict):
 
 @app.get("/api/order/{orderID}", response_class=JSONResponse)
 async def get_order(request: Request, orderID:int):
-	with mysql.connector.connect(pool_name="hello") as mydb, mydb.cursor(buffered=True,dictionary=True) as mycursor :
-		
-		query = """
-		SELECT orderid, amount, detail, name, email, phone, status
-		FROM orders
-		WHERE orderid = %s 
-		"""
-		mycursor.execute(query, (orderID,))
-		results = mycursor.fetchall()
 
-		if results :
-			return {
-				"data": {
-					"number": results[0]['orderid'],
-					"price": results[0]['amount'],
-					"trip": json.loads(results[0]['detail']),
-					"contact": {
-					"name": results[0]['name'],
-					"email": results[0]['email'],
-					"phone": results[0]['phone'],
-					},
-					"status": results[0]['status']
-				}
-				}
+	# 從 Authorization Header 中提取 token
+	auth_header = request.headers.get('Authorization')
+	if not auth_header:
+		return JSONResponse(status_code=403, content={
+			"error": true,
+			"message": "未登入系統，拒絕存取"
+			})
+	
+	else :
+		myjwt = auth_header.split(" ")[1] 
+
+		# 解碼 JWT
+		myjwtx = jwt.decode(myjwt,jwtkey,algorithms="HS256")
+
+		with mysql.connector.connect(pool_name="hello") as mydb, mydb.cursor(buffered=True,dictionary=True) as mycursor :
+			
+			query = """
+			SELECT o.orderid, o.amount, detail, o.name, o.email, o.phone, status, p.note
+			FROM orders o
+			JOIN payments p ON o.orderid = p.orderid
+			JOIN (
+				SELECT orderid, MAX(paymentTime) AS latest_payment_date
+				FROM payments
+				GROUP BY orderid
+			) tempQuery ON p.orderid = tempQuery.orderid AND p.paymentTime = tempQuery.latest_payment_date
+			WHERE o.orderid = %s AND o.username = %s
+			"""
+			mycursor.execute(query, (orderID, myjwtx['email']))
+			results = mycursor.fetchall()
+
+			if not results : 
+				return {
+					"data": None
+					}
+
+			elif results[0]['status'] == "paid" :
+				return {
+					"data": {
+						"number": results[0]['orderid'],
+						"price": results[0]['amount'],
+						"trip": json.loads(results[0]['detail']),
+						"contact": {
+						"name": results[0]['name'],
+						"email": results[0]['email'],
+						"phone": results[0]['phone'],
+						},
+						"status": results[0]['status']
+					}
+					}
+
+			elif results[0]['status'] == "unpaid" :
+				return {
+					"data": {
+						"number": results[0]['orderid'],
+						"price": results[0]['amount'],
+						"trip": json.loads(results[0]['detail']),
+						"contact": {
+						"name": results[0]['name'],
+						"email": results[0]['email'],
+						"phone": results[0]['phone'],
+						},
+						"status": results[0]['note']
+					}
+					}
+
+
+
 
 

@@ -144,10 +144,10 @@ function onSubmit(event) {
     // Get prime
     TPDirect.card.getPrime((result) => {
         if (result.status !== 0) {
-            alert('get prime error ' + result.msg)
+            // alert('get prime error ' + result.msg)
             return
         }
-        alert('get prime 成功，prime: ' + result.card.prime)
+        // alert('get prime 成功，prime: ' + result.card.prime)
         create_order(result)
 
         // send prime to your server, to pay with Pay by Prime API .
@@ -185,12 +185,20 @@ async function create_order(tappay_msg) {
     if (response.ok) {
         let data = await response.json() // Await the JSON parsing
         console.log(data)
+        alert("訂單已建立，付款成功")
         location.href=`/thankyou?number=${data.data.number}`
     }
     else {
         let data = await response.json() // Await the JSON parsing
-        console.log(data)
-        location.href=`/thankyou?number=${data.number}`
+        if (data.message === "沒有選擇任何商品") {
+            alert("請先選擇商品，再送出訂單")
+        }
+        else {
+            console.log(data)
+            alert("訂單已建立，付款失敗")
+            location.href=`/thankyou?number=${data.number}`
+        }
+
     }
 
 }

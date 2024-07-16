@@ -19,7 +19,15 @@ fetch(`/api/order/${number}`,{
 })
 .then(response => response.json())
 .then(data => {
-    orderID.innerText = number
-    paymentstatus.innerText = data.data.status
+    console.log(data)
+    if (data.data) {
+        orderID.innerText = number
+        paymentstatus.innerText = data.data.status
+    }
+    else {
+        orderID.innerText = "查無此訂單"
+        paymentstatus.innerText = "查無此訂單"
+    }
+
 
 })
