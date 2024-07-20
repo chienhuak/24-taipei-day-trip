@@ -3,7 +3,6 @@ from datetime import datetime,timedelta,timezone
 from fastapi.responses import FileResponse
 from fastapi.responses import JSONResponse
 from typing import Optional, Union
-import mysql.connector
 import json
 import os
 from fastapi.staticfiles import StaticFiles
@@ -11,21 +10,14 @@ import jwt
 import re
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 import requests
+from dbconfig import mysql
 
 app=FastAPI(debug=True)
 jwtkey = "iweorhfnen834"
 
-# 從環境變數中讀取 MySQL 密碼
-mysql_password = os.environ.get("MYSQL_PASSWORD")
+# 從環境變數中讀取密碼
 tappay_partner_key = os.environ.get("TAPPAY")
-# 連接到 MySQL 資料庫
-with mysql.connector.connect(
-    host="localhost",
-    user="root",
-    password=mysql_password,
-    database="website",
-	pool_name="hello"
-    ):pass
+
 
 # 設定靜態檔案路徑
 app.mount("/static", StaticFiles(directory="static"), name="static")
