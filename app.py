@@ -12,6 +12,11 @@ import jwt
 import re
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 import requests
+from fastapi import FastAPI, File, UploadFile
+import boto3
+from botocore.exceptions import NoCredentialsError
+
+
 
 app=FastAPI(debug=True)
 jwtkey = "iweorhfnen834"
@@ -19,6 +24,19 @@ jwtkey = "iweorhfnen834"
 # 從環境變數中讀取 MySQL 密碼
 mysql_password = os.environ.get("MYSQL_PASSWORD")
 tappay_partner_key = os.environ.get("TAPPAY")
+
+# 設置 AWS S3 環境變數
+AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
+AWS_BUCKET_NAME = "project-july.com"
+AWS_REGION = "ap-southeast-2"  # 例如 'us-east-1'
+
+s3_client = boto3.client(
+	's3', 
+	region_name=AWS_REGION,
+    aws_access_key_id=AWS_ACCESS_KEY_ID,
+    aws_secret_access_key=AWS_SECRET_ACCESS_KEY)
+
 # 連接到 MySQL 資料庫
 with mysql.connector.connect(
     host="localhost",
@@ -614,7 +632,7 @@ async def get_order(request: Request, orderID:int):
 
 
 @app.post("/api/createMessage", response_class=JSONResponse)
-async def createMessage(request: Request, say: Optional[str] = Form(None)):
+async def createMessage(request: Request, say: Optional[str] = Form(None), img_upload: Optional[UploadFile] = File(None)):  # 參數是 submit Form 的 name
 	# 從 Authorization Header 中提取 token
 	auth_header = request.headers.get('Authorization')
 	if not auth_header:
@@ -626,9 +644,17 @@ async def createMessage(request: Request, say: Optional[str] = Form(None)):
 		# 解碼 JWT
 		myjwtx = jwt.decode(myjwt,jwtkey,algorithms="HS256")
 
+		
+		img_link = None
+		if img_upload:
+			s3_key = f"uploads/{img_upload.filename}"
+			s3_client.upload_fileobj(img_upload.file, AWS_BUCKET_NAME, s3_key)
+			img_link = f"https://s3.{AWS_REGION}.amazonaws.com/{AWS_BUCKET_NAME}/{s3_key}"
+
+
 		with mysql.connector.connect(pool_name="hello") as mydb, mydb.cursor(buffered=True,dictionary=True) as mycursor :
-			query = "INSERT INTO message (member_id, content) VALUES (%s, %s)"
-			inputs = (myjwtx['id'], say )
+			query = "INSERT INTO message (member_id, content, img_link) VALUES (%s, %s, %s)"
+			inputs = (myjwtx['id'], say, img_link)
 			mycursor.execute(query, inputs)
 
 			# 提交事務
@@ -652,7 +678,7 @@ async def feed(request: Request):
 		with mysql.connector.connect(pool_name="hello") as mydb, mydb.cursor(buffered=True,dictionary=True) as mycursor :
 			query = """
 			WITH board AS(
-				SELECT member.name, message.content, message.time, message.id, parent_id, LPAD(ifnull(parent_id,message.id), 3, '0') AS level
+				SELECT member.name, message.content, img_link, message.time, message.id, parent_id, LPAD(ifnull(parent_id,message.id), 3, '0') AS level
 				FROM message 
 				JOIN member ON message.member_id = member.id 
 			)

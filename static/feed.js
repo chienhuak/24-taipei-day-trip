@@ -18,10 +18,19 @@ async function feed() {
         messages.forEach(message => {
 			// console.log(message.name)
 			// console.log(message.content)
+			const msgbox_div = document.createElement('div')
 			const msg_div = document.createElement('div')
 			// msg_div.innerText = data.data.show_msgboard['content']
 			msg_div.innerText = `${message.name}: ${message.content} (${message.time})`
-			content_div.appendChild(msg_div)
+			content_div.appendChild(msgbox_div)
+			msgbox_div.appendChild(msg_div)
+			if (message.img_link) {
+				const img_div = document.createElement('div')
+				const img = document.createElement('img')
+				img.src = message.img_link
+				msgbox_div.appendChild(img_div)
+				img_div.appendChild(img)
+			}
         }
 	)
 	// .catch(error => {
