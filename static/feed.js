@@ -29,3 +29,30 @@ async function feed() {
 	// })
 })
 }
+
+
+async function createMessage() {
+	try {
+		// 從 localStorage 獲取 JWT
+		const token = localStorage.getItem('token')
+		const form = document.getElementById('messageForm') // 取得 Form 元素
+		const formData = new FormData(form) // 提取 Form 的數據
+		const response = await fetch('/api/createMessage', {
+			method: 'POST',
+			headers: {
+			'Authorization': `Bearer ${token}` // 將 JWT 放在 Authorization Header 中
+			},
+			body: formData
+		})
+		if (response.redirected) {
+			window.location.href = response.url}
+		else {
+			// 其他響應情況
+			const result = await response.text();
+			console.log(result);
+		}}
+		catch (error) {
+			console.error('Error fetching data:', error);
+		}
+	}
+	

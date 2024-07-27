@@ -613,13 +613,12 @@ async def get_order(request: Request, orderID:int):
 
 
 
-@app.post("/createMessage", response_class=HTMLResponse)
+@app.post("/api/createMessage", response_class=JSONResponse)
 async def createMessage(request: Request, say: Optional[str] = Form(None)):
 	# 從 Authorization Header 中提取 token
 	auth_header = request.headers.get('Authorization')
 	if not auth_header:
 		return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
-
 
 	else:
 		myjwt = auth_header.split(" ")[1] 
