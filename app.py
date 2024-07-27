@@ -2,6 +2,7 @@ from fastapi import *
 from datetime import datetime,timedelta,timezone
 from fastapi.responses import FileResponse
 from fastapi.responses import JSONResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 from typing import Optional, Union
 import mysql.connector
 import json
@@ -65,6 +66,9 @@ async def booking(request: Request):
 @app.get("/thankyou", include_in_schema=False)
 async def thankyou(request: Request):
 	return FileResponse("./static/thankyou.html", media_type="text/html")
+@app.get("/feed", include_in_schema=False)
+async def feed(request: Request):
+	return FileResponse("./static/feed.html", media_type="text/html")
 
 @app.get("/api/attractions", response_class=JSONResponse)
 async def attractions(request: Request, page:Optional[int]=0,keyword:Optional[str]=""):
@@ -609,5 +613,75 @@ async def get_order(request: Request, orderID:int):
 
 
 
+@app.post("/createMessage", response_class=HTMLResponse)
+async def createMessage(request: Request, say: Optional[str] = Form(None)):
+	# 從 Authorization Header 中提取 token
+	auth_header = request.headers.get('Authorization')
+	if not auth_header:
+		return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
 
 
+	else:
+		myjwt = auth_header.split(" ")[1] 
+
+		# 解碼 JWT
+		myjwtx = jwt.decode(myjwt,jwtkey,algorithms="HS256")
+
+		with mysql.connector.connect(pool_name="hello") as mydb, mydb.cursor(buffered=True,dictionary=True) as mycursor :
+			query = "INSERT INTO message (member_id, content) VALUES (%s, %s)"
+			inputs = (myjwtx['id'], say )
+			mycursor.execute(query, inputs)
+
+			# 提交事務
+			mydb.commit()
+
+		return RedirectResponse(url="/feed", status_code=status.HTTP_303_SEE_OTHER)
+
+
+@app.get("/api/feed", response_class=JSONResponse)
+async def feed(request: Request):
+	# 檢查使用者是否已登入
+	# 從 Authorization Header 中提取 token
+	auth_header = request.headers.get('Authorization')
+	if not auth_header:
+		return JSONResponse(status_code=403, content={
+			"error": True,
+			"message": "未登入系統，拒絕存取"
+			})
+
+	else:
+		with mysql.connector.connect(pool_name="hello") as mydb, mydb.cursor(buffered=True,dictionary=True) as mycursor :
+			query = """
+			WITH board AS(
+				SELECT member.name, message.content, message.time, message.id, parent_id, LPAD(ifnull(parent_id,message.id), 3, '0') AS level
+				FROM message 
+				JOIN member ON message.member_id = member.id 
+			)
+			SELECT * FROM board 
+			ORDER BY level,id
+			"""
+			mycursor.execute(query)
+			result = mycursor.fetchall()
+			# print(result)
+
+			# 如果是回覆留言，則HTML要多一層ul
+			px=None
+			UL2=None
+			for x in result:
+				if not px:
+					pass
+				else:
+					if not UL2 and px['level']==x['level']:
+						x['addUL']=True
+						UL2=True
+					if UL2 and px['level']!=x['level']:
+						px['delUL']=True
+						UL2=None
+
+				px=x
+
+		return {
+				"data": {
+					"show_msgboard":result
+					}
+				}
