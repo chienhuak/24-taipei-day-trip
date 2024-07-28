@@ -646,10 +646,11 @@ async def createMessage(request: Request, say: Optional[str] = Form(None), img_u
 
 		
 		img_link = None
-		if img_upload:
+		if img_upload.filename:
 			s3_key = f"uploads/{img_upload.filename}"
 			s3_client.upload_fileobj(img_upload.file, AWS_BUCKET_NAME, s3_key)
-			img_link = f"https://s3.{AWS_REGION}.amazonaws.com/{AWS_BUCKET_NAME}/{s3_key}"
+			img_link = f"https://d3637x49yyjgf.cloudfront.net/uploads/{img_upload.filename}"
+			# img_link = f"https://s3.{AWS_REGION}.amazonaws.com/{AWS_BUCKET_NAME}/{s3_key}"
 
 
 		with mysql.connector.connect(pool_name="hello") as mydb, mydb.cursor(buffered=True,dictionary=True) as mycursor :
