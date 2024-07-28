@@ -39,8 +39,8 @@ s3_client = boto3.client(
 
 # 連接到 MySQL 資料庫
 with mysql.connector.connect(
-    host="localhost",
-    user="root",
+    host="rds-mysql-8.c1yokekwm2p0.ap-southeast-2.rds.amazonaws.com",
+    user="admin",
     password=mysql_password,
     database="website",
 	pool_name="hello"
