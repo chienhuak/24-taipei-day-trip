@@ -15,7 +15,7 @@ import requests
 from fastapi import FastAPI, File, UploadFile
 import boto3
 from botocore.exceptions import NoCredentialsError
-
+import uuid
 
 
 app=FastAPI(debug=True)
@@ -647,9 +647,12 @@ async def createMessage(request: Request, say: Optional[str] = Form(None), img_u
 		
 		img_link = None
 		if img_upload.filename:
-			s3_key = f"uploads/{img_upload.filename}"
+			# 產生唯一的文件名
+			unique_name = f"{datetime.now()}_{img_upload.filename}"
+			# 設置 S3 key
+			s3_key = f"{unique_name}"
 			s3_client.upload_fileobj(img_upload.file, AWS_BUCKET_NAME, s3_key)
-			img_link = f"https://d3637x49yyjgf.cloudfront.net/uploads/{img_upload.filename}"
+			img_link = f"https://d3637x49yyjgf.cloudfront.net/{s3_key}"
 			# img_link = f"https://s3.{AWS_REGION}.amazonaws.com/{AWS_BUCKET_NAME}/{s3_key}"
 
 
