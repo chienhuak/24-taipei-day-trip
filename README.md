@@ -8,6 +8,11 @@ An E-Commerce Website to view attractions in Taipei and book your travel plan.
 - Test Account: `test`/`test`
 - Payment Test: `6234 5774 3859 4899`/`1224`/`123`
 
+### Demo:
+<img src="https://github.com/user-attachments/assets/9500c1ff-f7a2-4ad5-9c83-9550b46af337" width="650" />
+<img src="https://github.com/user-attachments/assets/fe930cf0-18ba-4d80-a1e6-ce04b7baa7b6" width="650" />
+<img src="https://github.com/user-attachments/assets/c86b1469-45bc-4ff0-a004-034b86d4df59" width="650" />
+
 ### Main Features:
 
 - Framework: Python FastAPI 
@@ -20,20 +25,14 @@ An E-Commerce Website to view attractions in Taipei and book your travel plan.
 - RWD: Responsive Web Design, fit every platform
 - Allow keyword searching, lazy loading, add multiple items to shopping cart
 
-### Demo:
-
-![Index-GoogleChrome2024-09-1819-08-25-ezgif com-video-to-gif-converter (1)](https://github.com/user-attachments/assets/9500c1ff-f7a2-4ad5-9c83-9550b46af337)
-![Index-GoogleChrome2024-09-1819-08-25-ezgif com-video-to-gif-converter (2)](https://github.com/user-attachments/assets/fe930cf0-18ba-4d80-a1e6-ce04b7baa7b6)
-![Index-GoogleChrome2024-09-1819-08-25-ezgif com-video-to-gif-converter (3)](https://github.com/user-attachments/assets/c86b1469-45bc-4ff0-a004-034b86d4df59)
-
 
 ### Architecture Diagram:
 
-
-
-
+<img src="https://github.com/user-attachments/assets/a70f9dea-6144-49f9-bb5e-6d0804265cab" width="650" />
 
 ### Database Schema:
+
+<img src="https://github.com/user-attachments/assets/991e1f51-3465-4943-8fbc-684a1c11603d" width="650" />
 
 ### Figma Design:
 
