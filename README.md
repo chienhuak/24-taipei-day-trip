@@ -4,7 +4,7 @@ An E-Commerce Website to view attractions in Taipei and book your travel plan.
 
 ### Web Basic Info:
 
-- Website URL: http://13.54.113.48:8000/
+- Website URL: https://taipei.project-july.com
 - Test Account: `test`/`test`
 - Payment Test: `6234 5774 3859 4899`/`1224`/`123`
 
