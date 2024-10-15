@@ -8,6 +8,9 @@ WORKDIR /docker-website
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 
+# 暴露端口
+EXPOSE 8000
+
 # 應用程序代碼
 COPY . .
 
