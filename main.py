@@ -14,6 +14,7 @@ from dbconfig import mysql
 
 # from 路徑(子資料夾.檔名) import 類名稱
 from mvc_controllers.attraction import AttractionController 
+from mvc_controllers.auth import AuthController
 
 app=FastAPI(debug=True)
 jwtkey = "iweorhfnen834"
@@ -73,6 +74,14 @@ async def get_attraction(attractionId:int):
 	return AttractionController.get_attraction(attractionId)
 
 
+# 登入會員資訊
+@app.get("/api/user/auth", response_class=JSONResponse)
+async def signin(request: Request):
+	return AuthController.signin(request)
+
+
+# 未整理：
+
 @app.get("/api/mrts", response_class=JSONResponse)
 async def mrts(request: Request):
 	try:
@@ -99,36 +108,6 @@ async def mrts(request: Request):
 				"message": "系統錯誤"
 				}) 
 
-# 登入會員資訊
-@app.get("/api/user/auth", response_class=JSONResponse)
-async def signin(request: Request):
-
-	# 從 Authorization Header 中提取 token
-	auth_header = request.headers.get('Authorization')
-	if auth_header:
-		myjwt = auth_header.split(" ")[1] 
-		try:
-			myjwtx = jwt.decode(myjwt,jwtkey,algorithms="HS256")
-			# print(myjwtx)
-			return {
-				"data" : {
-					"id": myjwtx["id"],
-					"name" : myjwtx["name"] ,
-					"email" : myjwtx["email"]
-				}
-			}
-
-		except jwt.ExpiredSignatureError:
-			print("expired")
-			return JSONResponse(status_code=401, content={
-				"data": None
-				}) 
-
-		except Exception as e:
-			print("other exception")
-			return JSONResponse(status_code=401, content={
-				"data": None
-				}) 
 
 
 
