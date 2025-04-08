@@ -1,5 +1,4 @@
 from fastapi import *
-from datetime import datetime,timedelta,timezone
 from fastapi.responses import FileResponse
 from fastapi.responses import JSONResponse
 from typing import Optional, Union
@@ -74,10 +73,17 @@ async def get_attraction(attractionId:int):
 	return AttractionController.get_attraction(attractionId)
 
 
-# 登入會員資訊
+# 驗證用戶是否為登入狀態
 @app.get("/api/user/auth", response_class=JSONResponse)
 async def signin(request: Request):
-	return AuthController.signin(request)
+	return AuthController.get_signin(request)
+
+
+# 登入API：用戶輸入帳密，如果資料庫查找正確，就簽出 JWT token 回傳給前端
+@app.put("/api/user/auth", response_class=JSONResponse)
+async def signin(data:dict):
+	return AuthController.put_signin(data)
+
 
 
 # 未整理：
@@ -107,44 +113,6 @@ async def mrts(request: Request):
 				"error": True,
 				"message": "系統錯誤"
 				}) 
-
-
-
-
-# 登入會員
-@app.put("/api/user/auth", response_class=JSONResponse)
-async def signin(request: Request, data:dict):
-	#print (data)
-	with mysql.connector.connect(pool_name="hello") as mydb, mydb.cursor(buffered=True,dictionary=True) as mycursor :
-		query = """
-			SELECT id, name, username as email
-			FROM member 
-			WHERE username = %s AND password = %s
-			"""
-		mycursor.execute(query, (data["email"], data["password"],))
-		results = mycursor.fetchall()
-		
-
-		if results :
-			exp = datetime.now(tz=timezone.utc) + timedelta(days=7)
-			results[0].update({"exp": exp})
-			access_token = jwt.encode(results[0], jwtkey, algorithm="HS256")
-			resp = JSONResponse(status_code=200, content={
-				"token": access_token
-				})
-			# resp.set_cookie(key='myjwt',value=access_token, expires=exp)
-			return resp
-		
-		else :
-			#return {"data":None}
-
-			resp = JSONResponse(status_code=401, content={
-				"data": None,
-				#"error": True,
-				#"message": "系統錯誤"
-				})
-			# resp.delete_cookie("myjwt")
-			return resp 
 
 		
 

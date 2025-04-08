@@ -17,3 +17,10 @@ class AuthView:
 		return JSONResponse(status_code=401, content={
 			"data": None
 		})
+
+	
+	def token_success_signed(encoded_data):
+		access_token = encoded_data
+		return JSONResponse(status_code=200, content={
+			"token": access_token
+			})
